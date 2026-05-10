@@ -23,7 +23,7 @@
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|C:\\Visual_Projects\\InvoiceBuilder\\splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -31,7 +31,7 @@
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\emaildraftservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\invoicebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|C:\\Visual_Projects\\InvoiceBuilder\\invoicebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:invoicebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -90,8 +90,7 @@
               "RelativeToolTip": "Models\\Statement.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAtwA0AAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T17:40:57.952Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-02T17:40:57.952Z"
             },
             {
               "$type": "Document",
@@ -102,8 +101,7 @@
               "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\SplashForm.cs [Design]",
               "RelativeToolTip": "SplashForm.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T17:22:40.453Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2026-05-02T17:22:40.453Z"
             },
             {
               "$type": "Document",
@@ -115,8 +113,7 @@
               "RelativeToolTip": "Services\\EmailDraftService.cs",
               "ViewState": "AgIAAH4AAAAAAAAAAAAAwIcAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T17:16:42.54Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-02T17:16:42.54Z"
             },
             {
               "$type": "Document",
@@ -126,7 +123,7 @@
               "RelativeDocumentMoniker": "StatementBuilder.cs",
               "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\StatementBuilder.cs",
               "RelativeToolTip": "StatementBuilder.cs",
-              "ViewState": "AgIAAJIAAAAAAAAAAAAgwOgAAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAAJIAAAAAAAAAAAAgwJgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-02T15:09:08.001Z",
               "EditorCaption": ""
@@ -141,8 +138,7 @@
               "RelativeToolTip": "Services\\PdfStatementService.cs",
               "ViewState": "AgIAAKwAAAAAAAAAAAAtwLYAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T15:08:30.031Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-02T15:08:30.031Z"
             },
             {
               "$type": "Document",
@@ -154,8 +150,7 @@
               "RelativeToolTip": "Models\\StatementLine.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAqwAkAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T15:08:24.581Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-02T15:08:24.581Z"
             },
             {
               "$type": "Document",
@@ -167,8 +162,7 @@
               "RelativeToolTip": "SplashForm.cs",
               "ViewState": "AgIAACgAAAAAAAAAAAAAABEAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T17:27:53.87Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-02T17:27:53.87Z"
             },
             {
               "$type": "Document",
@@ -188,11 +182,10 @@
               "Title": "InvoiceBuilder.cs [Design]",
               "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.cs",
               "RelativeDocumentMoniker": "InvoiceBuilder.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.cs [Design]*",
-              "RelativeToolTip": "InvoiceBuilder.cs [Design]*",
+              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.cs [Design]",
+              "RelativeToolTip": "InvoiceBuilder.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-27T19:38:54.065Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2026-04-27T19:38:54.065Z"
             },
             {
               "$type": "Document",
@@ -236,12 +229,11 @@
               "Title": "InvoiceBuilder.Designer.cs",
               "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.Designer.cs",
               "RelativeDocumentMoniker": "InvoiceBuilder.Designer.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.Designer.cs*",
-              "RelativeToolTip": "InvoiceBuilder.Designer.cs*",
+              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.Designer.cs",
+              "RelativeToolTip": "InvoiceBuilder.Designer.cs",
               "ViewState": "AgIAABgAAAAAAAAAAAAWwBgAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-27T19:39:34.224Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-27T19:39:34.224Z"
             },
             {
               "$type": "Document",

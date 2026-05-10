@@ -18,6 +18,7 @@ namespace InvoiceBuilder
         private readonly StatementNumberService _statementNumberService = new();
         private readonly PdfStatementService _pdfStatementService = new();
         private readonly EmailDraftService _emailDraftService = new();
+        private readonly AppSettingsService _settingsService = new();
 
         private readonly DataGridView _invoiceGrid = new();
         private readonly Label _statementNumber = new();
@@ -163,8 +164,9 @@ namespace InvoiceBuilder
             _invoiceGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "clmDate", HeaderText = "Date", ReadOnly = true, FillWeight = 75 });
             _invoiceGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "clmInvoice", HeaderText = "Invoice #", ReadOnly = true, FillWeight = 75 });
             _invoiceGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "clmVessel", HeaderText = "Vessel", ReadOnly = true, FillWeight = 120 });
+            _invoiceGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "clmVehicleRegistration", HeaderText = "Vehicle Reg", FillWeight = 95 });
             _invoiceGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "clmLoads", HeaderText = "Loads/Trips", ReadOnly = true, FillWeight = 75 });
-            _invoiceGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "clmDescription", HeaderText = "Statement Description", FillWeight = 260 });
+            _invoiceGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "clmDescription", HeaderText = "Statement Description", FillWeight = 230 });
             _invoiceGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "clmAmount", HeaderText = "Amount", ReadOnly = true, FillWeight = 90 });
 
             _invoiceGrid.CurrentCellDirtyStateChanged += (_, _) =>
@@ -186,6 +188,7 @@ namespace InvoiceBuilder
         private void LoadInvoices()
         {
             _invoices = _invoiceRepository.GetAll();
+            var settings = _settingsService.Load();
             _invoiceGrid.Rows.Clear();
 
             foreach (var invoice in _invoices)
@@ -195,6 +198,7 @@ namespace InvoiceBuilder
                     invoice.Date.ToString("yyyy/MM/dd"),
                     invoice.InvoiceNumber.ToString(CultureInfo.InvariantCulture),
                     invoice.Vessel,
+                    string.IsNullOrWhiteSpace(invoice.VehicleRegistration) ? settings.DefaultVehicleRegistration : invoice.VehicleRegistration,
                     invoice.LoadCount == 0 ? string.Empty : invoice.LoadCount.ToString(CultureInfo.InvariantCulture),
                     string.Empty,
                     $"R {invoice.Total:N2}");
@@ -240,7 +244,8 @@ namespace InvoiceBuilder
 
                 selected.Add(new SelectedStatementRow(
                     invoice,
-                    row.Cells["clmDescription"].Value?.ToString()?.Trim() ?? string.Empty));
+                    row.Cells["clmDescription"].Value?.ToString()?.Trim() ?? string.Empty,
+                    row.Cells["clmVehicleRegistration"].Value?.ToString()?.Trim() ?? string.Empty));
             }
 
             return selected
@@ -302,7 +307,7 @@ namespace InvoiceBuilder
                     Date = row.Invoice.Date,
                     Description = BuildLineDescription(row.Invoice, row.Description),
                     InvoiceNumber = row.Invoice.InvoiceNumber.ToString(CultureInfo.InvariantCulture),
-                    VehicleRegistration = "CR69MZZN",
+                    VehicleRegistration = row.VehicleRegistration,
                     Amount = row.Invoice.Total
                 }).ToList()
             };
@@ -359,14 +364,16 @@ namespace InvoiceBuilder
 
         private sealed class SelectedStatementRow
         {
-            public SelectedStatementRow(GeneratedInvoiceRecord invoice, string description)
+            public SelectedStatementRow(GeneratedInvoiceRecord invoice, string description, string vehicleRegistration)
             {
                 Invoice = invoice;
                 Description = description;
+                VehicleRegistration = vehicleRegistration;
             }
 
             public GeneratedInvoiceRecord Invoice { get; }
             public string Description { get; }
+            public string VehicleRegistration { get; }
         }
     }
 }
