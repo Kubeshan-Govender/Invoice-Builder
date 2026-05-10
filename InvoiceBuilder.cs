@@ -18,7 +18,9 @@ namespace InvoiceBuilder
         private readonly InvoiceService _invoiceService = new();
         private readonly PdfInvoiceService _pdfInvoiceService = new();
         private readonly GeneratedInvoiceRepository _generatedInvoiceRepository = new();
+        private readonly AppSettingsService _settingsService = new();
         private readonly Button _btnGenerateStatement = new();
+        private readonly Button _btnSettings = new();
 
         public InvoiceBuilder()
         {
@@ -78,6 +80,7 @@ namespace InvoiceBuilder
             btnCalculate.AutoSize = true;
             btnAddRow.AutoSize = true;
             ConfigureStatementButton();
+            ConfigureSettingsButton();
         }
 
         private void ApplyVisualStyle()
@@ -103,6 +106,7 @@ namespace InvoiceBuilder
             AppStyles.ApplyButton(btnCalculate, ButtonRole.Secondary);
             AppStyles.ApplyButton(btnAddRow, ButtonRole.Secondary);
             AppStyles.ApplyButton(_btnGenerateStatement, ButtonRole.Accent);
+            AppStyles.ApplyButton(_btnSettings, ButtonRole.Secondary);
         }
 
         private void FixHeaderSpacing()
@@ -142,6 +146,21 @@ namespace InvoiceBuilder
             }
 
             AppStyles.ApplyButton(_btnGenerateStatement, ButtonRole.Accent);
+        }
+
+        private void ConfigureSettingsButton()
+        {
+            _btnSettings.Text = "Settings";
+            _btnSettings.AutoSize = true;
+            _btnSettings.Height = btnGenerate.Height;
+            _btnSettings.Click += (_, _) => OpenSettings();
+
+            if (!flowLayoutPanel1.Controls.Contains(_btnSettings))
+            {
+                flowLayoutPanel1.Controls.Add(_btnSettings);
+            }
+
+            AppStyles.ApplyButton(_btnSettings, ButtonRole.Secondary);
         }
 
         private void WireEvents()
@@ -293,14 +312,29 @@ namespace InvoiceBuilder
             statementBuilder.ShowDialog(this);
         }
 
-        private static GeneratedInvoiceRecord BuildGeneratedInvoiceRecord(Invoice invoice, string pdfPath)
+        private void OpenSettings()
         {
+            if (!SettingsForm.PromptForAdmin(this))
+            {
+                MessageBox.Show("Admin password was not accepted.", "Admin Settings", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            using var settingsForm = new SettingsForm();
+            settingsForm.ShowDialog(this);
+        }
+
+        private GeneratedInvoiceRecord BuildGeneratedInvoiceRecord(Invoice invoice, string pdfPath)
+        {
+            var settings = _settingsService.Load();
+
             return new GeneratedInvoiceRecord
             {
                 InvoiceNumber = invoice.InvoiceNumber,
                 Date = invoice.Date,
                 Customer = invoice.Customer,
                 Vessel = invoice.Vessel,
+                VehicleRegistration = settings.DefaultVehicleRegistration,
                 Description = BuildStatementDescription(invoice),
                 LoadCount = invoice.Loads.Count,
                 StatementDescription = BuildStatementDescriptionDetail(invoice),

@@ -8,6 +8,7 @@ namespace InvoiceBuilder.Models
         public DateTime Date { get; set; }
         public string Customer { get; set; } = string.Empty;
         public string Vessel { get; set; } = string.Empty;
+        public string VehicleRegistration { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int LoadCount { get; set; }
         public string StatementDescription { get; set; } = string.Empty;

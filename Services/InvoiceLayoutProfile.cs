@@ -72,101 +72,109 @@ namespace InvoiceBuilder.Services
 
         public static InvoiceLayoutProfile Active => ForCompany(ActiveProfile);
 
-        // Personalize invoices here. This is code-only configuration, so end users cannot
-        // change company layouts from the application screen.
-        public static InvoiceLayoutProfile FaithTrucking { get; } = new()
+        // Core layout stays in code; selected business defaults can be edited from Admin Settings.
+        public static InvoiceLayoutProfile FaithTrucking => BuildFaithTrucking(new AppSettings());
+
+        private static InvoiceLayoutProfile BuildFaithTrucking(AppSettings settings)
         {
-            CompanyName = "FAITH TRUCKING (PTY) LTD",
-            FooterCompanyName = "FAITH TRUCKING PTY(LTD)",
-            LogoPath = "Media/logo.jpeg",
-            CompanyDetails =
-            [
-                "55 OCEANRIDGE DRIVE",
-                "VERULAM",
-                "Phone: 0691157481 / 0828223367"
-            ],
-            Terms = "15 Days",
-            BillToDetails =
-            [
-                "OP Shed",
-                "T-Jetty",
-                "Durban Harbour"
-            ],
-            ContactNote = "For more information and questions about the above invoice please contact:",
-            ContactEmail = "michaelgovender12345@gmail.com",
-            StatementEmail = "faithtrucking12345@gmail.com",
-            StatementPhone = "0691157418 / 0828223367",
-            StatementBillToName = "Everest Holdings",
-            StatementBillToDetails =
-            [
-                "OP Shed",
-                "T-JETTY",
-                "Durban Harbour"
-            ],
-            AccountHolder = "FAITH TRUCKING PTY LTD",
-            EmailDefaultRecipient = "",
-            EmailSenderName = "Michael Govender",
-            EmailSenderCompanyName = "Faith Trucking (Pty) Ltd",
-            LoadTableColumns =
-            [
-                new()
-                {
-                    Header = "No.",
-                    Width = 30,
-                    Alignment = InvoiceTextAlignment.Center,
-                    Value = (_, index) => index.ToString()
-                },
-                new()
-                {
-                    Header = "Date",
-                    Width = 70,
-                    Alignment = InvoiceTextAlignment.Center,
-                    Value = (item, _) => item.Date.ToString("yyyy/MM/dd")
-                },
-                new()
-                {
-                    Header = "Description",
-                    Width = 3,
-                    UseRelativeWidth = true,
-                    Value = (item, _) => item.Description
-                },
-                new()
-                {
-                    Header = "Weight",
-                    Width = 70,
-                    Alignment = InvoiceTextAlignment.Right,
-                    Value = (item, _) => item.Weight.ToString("N0")
-                },
-                new()
-                {
-                    Header = "Qty",
-                    Width = 40,
-                    Alignment = InvoiceTextAlignment.Center,
-                    Value = (item, _) => item.Quantity.ToString()
-                },
-                new()
-                {
-                    Header = "Unit Price",
-                    Width = 80,
-                    Alignment = InvoiceTextAlignment.Right,
-                    Value = (item, _) => $"R {item.UnitPrice:N2}"
-                },
-                new()
-                {
-                    Header = "Amount",
-                    Width = 80,
-                    Alignment = InvoiceTextAlignment.Right,
-                    Value = (item, _) => $"R {item.Amount:N2}"
-                }
-            ]
-        };
+            return new InvoiceLayoutProfile
+            {
+                CompanyName = "FAITH TRUCKING (PTY) LTD",
+                FooterCompanyName = "FAITH TRUCKING PTY(LTD)",
+                LogoPath = "Media/logo.jpeg",
+                CompanyDetails =
+                [
+                    "55 OCEANRIDGE DRIVE",
+                    "VERULAM",
+                    "Phone: 0691157481 / 0828223367"
+                ],
+                Terms = "15 Days",
+                BillToDetails =
+                [
+                    "OP Shed",
+                    "T-Jetty",
+                    "Durban Harbour"
+                ],
+                ContactNote = "For more information and questions about the above invoice please contact:",
+                ContactEmail = "michaelgovender12345@gmail.com",
+                StatementEmail = settings.StatementEmail,
+                StatementPhone = settings.StatementPhone,
+                StatementBillToName = settings.StatementBillToName,
+                StatementBillToDetails =
+                [
+                    "OP Shed",
+                    "T-JETTY",
+                    "Durban Harbour"
+                ],
+                BankName = settings.BankName,
+                AccountHolder = settings.AccountHolder,
+                AccountNumber = settings.AccountNumber,
+                AccountType = settings.AccountType,
+                BranchCode = settings.BranchCode,
+                EmailDefaultRecipient = settings.EmailDefaultRecipient,
+                EmailSenderName = settings.EmailSenderName,
+                EmailSenderCompanyName = settings.EmailSenderCompanyName,
+                LoadTableColumns =
+                [
+                    new()
+                    {
+                        Header = "No.",
+                        Width = 30,
+                        Alignment = InvoiceTextAlignment.Center,
+                        Value = (_, index) => index.ToString()
+                    },
+                    new()
+                    {
+                        Header = "Date",
+                        Width = 70,
+                        Alignment = InvoiceTextAlignment.Center,
+                        Value = (item, _) => item.Date.ToString("yyyy/MM/dd")
+                    },
+                    new()
+                    {
+                        Header = "Description",
+                        Width = 3,
+                        UseRelativeWidth = true,
+                        Value = (item, _) => item.Description
+                    },
+                    new()
+                    {
+                        Header = "Weight",
+                        Width = 70,
+                        Alignment = InvoiceTextAlignment.Right,
+                        Value = (item, _) => item.Weight.ToString("N0")
+                    },
+                    new()
+                    {
+                        Header = "Qty",
+                        Width = 40,
+                        Alignment = InvoiceTextAlignment.Center,
+                        Value = (item, _) => item.Quantity.ToString()
+                    },
+                    new()
+                    {
+                        Header = "Unit Price",
+                        Width = 80,
+                        Alignment = InvoiceTextAlignment.Right,
+                        Value = (item, _) => $"R {item.UnitPrice:N2}"
+                    },
+                    new()
+                    {
+                        Header = "Amount",
+                        Width = 80,
+                        Alignment = InvoiceTextAlignment.Right,
+                        Value = (item, _) => $"R {item.Amount:N2}"
+                    }
+                ]
+            };
+        }
 
         public static InvoiceLayoutProfile ForCompany(string companyKey)
         {
             return companyKey switch
             {
-                "FaithTrucking" => FaithTrucking,
-                _ => FaithTrucking
+                "FaithTrucking" => BuildFaithTrucking(new AppSettingsService().Load()),
+                _ => BuildFaithTrucking(new AppSettingsService().Load())
             };
         }
     }
