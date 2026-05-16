@@ -19,8 +19,12 @@ namespace InvoiceBuilder
         private readonly PdfInvoiceService _pdfInvoiceService = new();
         private readonly GeneratedInvoiceRepository _generatedInvoiceRepository = new();
         private readonly AppSettingsService _settingsService = new();
+        private readonly InvoiceDraftService _draftService = new();
         private readonly Button _btnGenerateStatement = new();
         private readonly Button _btnSettings = new();
+        private readonly Button _btnDeleteRow = new();
+        private bool _isLoadingDraft;
+        private bool _isUpdatingTotals;
 
         public InvoiceBuilder()
         {
@@ -28,7 +32,7 @@ namespace InvoiceBuilder
             ConfigureGrid();
             ApplyVisualStyle();
             WireEvents();
-            StartNewInvoice();
+            LoadDraftOrStartNewInvoice();
         }
 
         private Invoice BuildInvoiceFromUI(bool validateSourceInvoiceNumbers = false)
@@ -54,7 +58,7 @@ namespace InvoiceBuilder
                     Weight = ReadDecimal(row.Cells["clmWeight"].Value),
                     Quantity = ReadInt(row.Cells["clmQuantity"].Value),
                     UnitPrice = ReadDecimal(row.Cells["clmPrice"].Value),
-                    CalcType = cboCalcType.SelectedItem?.ToString() ?? "Weight"
+                    CalcType = ReadRowCalcType(row)
                 };
 
                 invoice.Loads.Add(item);
@@ -73,14 +77,25 @@ namespace InvoiceBuilder
         {
             cboCalcType.SelectedIndex = 0;
             UseDatePickerColumn();
+            EnsureCalculationColumn();
             clmInvoiceNum.ReadOnly = false;
-            dataGrid.AllowUserToAddRows = true;
+            dataGrid.AllowUserToAddRows = false;
+            dataGrid.AllowUserToResizeColumns = false;
+            dataGrid.AllowUserToResizeRows = false;
+            dataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            foreach (DataGridViewColumn column in dataGrid.Columns)
+            {
+                column.Resizable = DataGridViewTriState.False;
+            }
+
             btnGenerate.AutoSize = true;
             btnCalculate.AutoSize = true;
             btnAddRow.AutoSize = true;
             ConfigureStatementButton();
             ConfigureSettingsButton();
+            ConfigureDeleteRowButton();
         }
 
         private void ApplyVisualStyle()
@@ -91,9 +106,7 @@ namespace InvoiceBuilder
 
             AppStyles.ApplyHeaderPanel(tableLayoutHeader);
             FixHeaderSpacing();
-            tableLayoutPanel1.BackColor = AppStyles.Panel;
-            tableLayoutPanel1.Padding = new Padding(12);
-            tableLayoutPanel1.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
+            ConfigureTotalsPanel();
 
             lblInvoiceNum.ForeColor = AppStyles.Primary;
             lblInvoiceNum.Font = new Font("Segoe UI Semibold", 12F);
@@ -105,8 +118,47 @@ namespace InvoiceBuilder
             AppStyles.ApplyButton(btnGenerate, ButtonRole.Primary);
             AppStyles.ApplyButton(btnCalculate, ButtonRole.Secondary);
             AppStyles.ApplyButton(btnAddRow, ButtonRole.Secondary);
+            AppStyles.ApplyButton(_btnDeleteRow, ButtonRole.Secondary);
             AppStyles.ApplyButton(_btnGenerateStatement, ButtonRole.Accent);
             AppStyles.ApplyButton(_btnSettings, ButtonRole.Secondary);
+            AppStyles.ApplyButtonIcon(btnGenerate, ButtonIcon.Generate, ButtonRole.Primary);
+            AppStyles.ApplyButtonIcon(btnCalculate, ButtonIcon.Calculate, ButtonRole.Secondary);
+            AppStyles.ApplyButtonIcon(btnAddRow, ButtonIcon.Add, ButtonRole.Secondary);
+            AppStyles.ApplyButtonIcon(_btnDeleteRow, ButtonIcon.Delete, ButtonRole.Secondary);
+            AppStyles.ApplyButtonIcon(_btnGenerateStatement, ButtonIcon.Statement, ButtonRole.Accent);
+            AppStyles.ApplyButtonIcon(_btnSettings, ButtonIcon.Settings, ButtonRole.Secondary);
+        }
+
+        private void ConfigureTotalsPanel()
+        {
+            tableLayoutPanel1.BackColor = AppStyles.Panel;
+            tableLayoutPanel1.Padding = new Padding(18, 12, 18, 12);
+            tableLayoutPanel1.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
+            tableLayoutPanel1.Size = new Size(360, 132);
+            tableLayoutPanel1.MinimumSize = new Size(360, 132);
+            tableLayoutPanel1.ColumnStyles.Clear();
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 42F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 58F));
+            tableLayoutPanel1.RowStyles.Clear();
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+
+            foreach (var label in new[] { lblSubTotalHeader, lblVATHeader, lblTotalHeader })
+            {
+                label.AutoSize = false;
+                label.Dock = DockStyle.Fill;
+                label.TextAlign = ContentAlignment.MiddleLeft;
+                label.Margin = new Padding(4, 0, 8, 0);
+            }
+
+            foreach (var label in new[] { lblSubTotal, lblVAT, lblTotal })
+            {
+                label.AutoSize = false;
+                label.Dock = DockStyle.Fill;
+                label.TextAlign = ContentAlignment.MiddleRight;
+                label.Margin = new Padding(8, 0, 4, 0);
+            }
         }
 
         private void FixHeaderSpacing()
@@ -163,33 +215,109 @@ namespace InvoiceBuilder
             AppStyles.ApplyButton(_btnSettings, ButtonRole.Secondary);
         }
 
+        private void ConfigureDeleteRowButton()
+        {
+            _btnDeleteRow.Text = "Delete Row";
+            _btnDeleteRow.AutoSize = true;
+            _btnDeleteRow.Height = btnGenerate.Height;
+            _btnDeleteRow.Click += (_, _) => DeleteCurrentRow();
+
+            if (!flowLayoutPanel1.Controls.Contains(_btnDeleteRow))
+            {
+                flowLayoutPanel1.Controls.Add(_btnDeleteRow);
+            }
+
+            AppStyles.ApplyButton(_btnDeleteRow, ButtonRole.Secondary);
+        }
+
         private void WireEvents()
         {
-            btnAddRow.Click += (_, _) => AddLoadRow();
+            btnAddRow.Click += (_, _) => AddLoadRowAndFocusDate();
             btnCalculate.Click += (_, _) => CalculateAndDisplayTotals();
             btnGenerate.Click += (_, _) => GenerateInvoicePdf();
-            cboCalcType.SelectedIndexChanged += (_, _) => CalculateAndDisplayTotals();
-            dataGrid.CellEndEdit += (_, _) => CalculateAndDisplayTotals();
-            dataGrid.RowsAdded += (_, _) => NumberRows();
+            AcceptButton = btnAddRow;
+            KeyPreview = true;
+            KeyDown += InvoiceBuilder_KeyDown;
+            FormClosing += (_, _) =>
+            {
+                CommitGridEdits();
+                SaveCurrentDraft();
+            };
+            txtVessel.TextChanged += (_, _) => SaveCurrentDraft();
+            dtpDate.ValueChanged += (_, _) => SaveCurrentDraft();
+            cboCalcType.SelectedIndexChanged += (_, _) =>
+            {
+                CalculateAndDisplayTotals();
+                SaveCurrentDraft();
+            };
+            dataGrid.KeyDown += DataGrid_KeyDown;
+            dataGrid.CurrentCellDirtyStateChanged += (_, _) =>
+            {
+                if (dataGrid.IsCurrentCellDirty)
+                {
+                    dataGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                }
+            };
+            dataGrid.CellValueChanged += (_, e) =>
+            {
+                if (!_isUpdatingTotals && e.RowIndex >= 0 && e.ColumnIndex >= 0)
+                {
+                    var columnName = dataGrid.Columns[e.ColumnIndex].Name;
+                    if (columnName == "clmCalcType")
+                    {
+                        CalculateAndDisplayTotals();
+                    }
+                }
+
+                SaveCurrentDraft();
+            };
+            dataGrid.CellEndEdit += (_, _) =>
+            {
+                CalculateAndDisplayTotals();
+                SaveCurrentDraft();
+            };
+            dataGrid.RowsAdded += (_, _) =>
+            {
+                NumberRows();
+                SaveCurrentDraft();
+            };
             dataGrid.RowsRemoved += (_, _) =>
             {
                 NumberRows();
                 CalculateAndDisplayTotals();
+                SaveCurrentDraft();
             };
+        }
+
+        private void LoadDraftOrStartNewInvoice()
+        {
+            var draft = _draftService.Load();
+            if (draft is null)
+            {
+                StartNewInvoice();
+                return;
+            }
+
+            LoadInvoiceDraft(draft);
         }
 
         private void StartNewInvoice()
         {
+            _isLoadingDraft = true;
+            dataGrid.Rows.Clear();
             lblInvoiceNum.Text = _invoiceNumberService.GetNextInvoiceNumberPreview().ToString(CultureInfo.InvariantCulture);
             dtpDate.Value = DateTime.Today;
+            txtVessel.Clear();
             lblSubTotal.Text = FormatCurrency(0);
             lblVAT.Text = FormatCurrency(0);
             lblTotal.Text = FormatCurrency(0);
             cboCalcType.SelectedIndex = 0;
             AddLoadRow();
+            _isLoadingDraft = false;
+            SaveCurrentDraft();
         }
 
-        private void AddLoadRow()
+        private int AddLoadRow()
         {
             var previousRow = dataGrid.Rows
                 .Cast<DataGridViewRow>()
@@ -199,11 +327,133 @@ namespace InvoiceBuilder
             var rowIndex = dataGrid.Rows.Add();
             var row = dataGrid.Rows[rowIndex];
             row.Cells["clmNum"].Value = rowIndex + 1;
-            row.Cells["clmDate"].Value = DateTime.Today;
+            row.Cells["clmDate"].Value = ReadDate(previousRow?.Cells["clmDate"].Value);
+            row.Cells["clmCalcType"].Value = GetDefaultCalcType();
             row.Cells["clmDescription"].Value = previousRow?.Cells["clmDescription"].Value;
             row.Cells["clmQuantity"].Value = previousRow?.Cells["clmQuantity"].Value ?? 1;
             row.Cells["clmPrice"].Value = previousRow?.Cells["clmPrice"].Value;
             NumberRows();
+            SaveCurrentDraft();
+            return rowIndex;
+        }
+
+        private void AddLoadRowAndFocusDate()
+        {
+            CommitGridEdits();
+            var rowIndex = AddLoadRow();
+            FocusRowDateCell(rowIndex);
+        }
+
+        private void FocusRowDateCell(int rowIndex)
+        {
+            if (rowIndex < 0 || rowIndex >= dataGrid.Rows.Count)
+            {
+                return;
+            }
+
+            dataGrid.CurrentCell = dataGrid.Rows[rowIndex].Cells["clmDate"];
+            dataGrid.BeginEdit(true);
+        }
+
+        private void DeleteCurrentRow()
+        {
+            var row = dataGrid.CurrentRow;
+            if (row is null || row.IsNewRow)
+            {
+                MessageBox.Show("Select a load row to delete.", "Invoice Builder", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var result = MessageBox.Show("Delete the selected load row?", "Invoice Builder", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            dataGrid.Rows.Remove(row);
+            if (dataGrid.Rows.Count == 0)
+            {
+                AddLoadRow();
+            }
+
+            NumberRows();
+            CalculateAndDisplayTotals();
+            SaveCurrentDraft();
+        }
+
+        private void DataGrid_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+            {
+                return;
+            }
+
+            AddLoadRowAndFocusDate();
+            e.Handled = true;
+            e.SuppressKeyPress = true;
+        }
+
+        private void InvoiceBuilder_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && ActiveControl != dataGrid)
+            {
+                AddLoadRowAndFocusDate();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void LoadInvoiceDraft(Invoice draft)
+        {
+            _isLoadingDraft = true;
+            dataGrid.Rows.Clear();
+            lblInvoiceNum.Text = draft.InvoiceNumber.ToString(CultureInfo.InvariantCulture);
+            dtpDate.Value = draft.Date == default ? DateTime.Today : draft.Date;
+            txtVessel.Text = draft.Vessel;
+
+            var calcType = draft.Loads.FirstOrDefault()?.CalcType ?? "Weight";
+            cboCalcType.SelectedItem = cboCalcType.Items.Contains(calcType) ? calcType : "Weight";
+
+            foreach (var load in draft.Loads)
+            {
+                var rowIndex = dataGrid.Rows.Add();
+                var row = dataGrid.Rows[rowIndex];
+                row.Cells["clmDate"].Value = load.Date == default ? DateTime.Today : load.Date;
+                row.Cells["clmCalcType"].Value = string.IsNullOrWhiteSpace(load.CalcType) ? GetDefaultCalcType() : load.CalcType;
+                row.Cells["clmInvoiceNum"].Value = load.SourceInvoiceNumber;
+                row.Cells["clmDescription"].Value = load.Description;
+                row.Cells["clmWeight"].Value = load.Weight == 0 ? null : load.Weight;
+                row.Cells["clmQuantity"].Value = load.Quantity == 0 ? 1 : load.Quantity;
+                row.Cells["clmPrice"].Value = load.UnitPrice == 0 ? null : load.UnitPrice;
+                row.Cells["clmAmount"].Value = load.Amount == 0 ? null : load.Amount.ToString("N2", CultureInfo.InvariantCulture);
+            }
+
+            if (dataGrid.Rows.Count == 0)
+            {
+                AddLoadRow();
+            }
+
+            NumberRows();
+            _isLoadingDraft = false;
+            CalculateAndDisplayTotals();
+            SaveCurrentDraft();
+        }
+
+        private void SaveCurrentDraft()
+        {
+            if (_isLoadingDraft)
+            {
+                return;
+            }
+
+            try
+            {
+                _draftService.Save(BuildInvoiceFromUI());
+            }
+            catch
+            {
+                // Draft saving should never block the user from finishing the invoice.
+            }
         }
 
         private void UseDatePickerColumn()
@@ -224,6 +474,25 @@ namespace InvoiceBuilder
             });
         }
 
+        private void EnsureCalculationColumn()
+        {
+            if (dataGrid.Columns.Contains("clmCalcType"))
+            {
+                return;
+            }
+
+            var descriptionIndex = dataGrid.Columns["clmDescription"].Index;
+            dataGrid.Columns.Insert(descriptionIndex, new DataGridViewComboBoxColumn
+            {
+                DataSource = new[] { "Weight", "Flat" },
+                DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton,
+                FillWeight = 95F,
+                HeaderText = "CALC",
+                Name = "clmCalcType",
+                Resizable = DataGridViewTriState.False
+            });
+        }
+
         private void NumberRows()
         {
             var number = 1;
@@ -238,6 +507,8 @@ namespace InvoiceBuilder
         {
             try
             {
+                CommitGridEdits();
+                _isUpdatingTotals = true;
                 var invoice = BuildInvoiceFromUI();
 
                 var loadIndex = 0;
@@ -257,9 +528,11 @@ namespace InvoiceBuilder
                 lblSubTotal.Text = FormatCurrency(invoice.Subtotal);
                 lblVAT.Text = FormatCurrency(invoice.Vat);
                 lblTotal.Text = FormatCurrency(invoice.Total);
+                _isUpdatingTotals = false;
             }
             catch (Exception ex)
             {
+                _isUpdatingTotals = false;
                 MessageBox.Show($"Please check the load details. {ex.Message}", "Calculation error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -268,6 +541,7 @@ namespace InvoiceBuilder
         {
             try
             {
+                CommitGridEdits();
                 var invoice = BuildInvoiceFromUI(validateSourceInvoiceNumbers: true);
                 if (invoice.Loads.Count == 0)
                 {
@@ -293,6 +567,7 @@ namespace InvoiceBuilder
                 _pdfInvoiceService.SaveInvoice(invoice, saveDialog.FileName);
                 _invoiceNumberService.MarkInvoiceNumberUsed(invoice.InvoiceNumber);
                 _generatedInvoiceRepository.Save(BuildGeneratedInvoiceRecord(invoice, saveDialog.FileName));
+                _draftService.Clear();
 
                 MessageBox.Show("Invoice PDF generated successfully.", "Invoice Builder", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -445,6 +720,35 @@ namespace InvoiceBuilder
             return int.TryParse(invoiceNumber, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number)
                 ? number
                 : int.MaxValue;
+        }
+
+        private string GetDefaultCalcType()
+        {
+            return cboCalcType.SelectedItem?.ToString() ?? "Weight";
+        }
+
+        private string ReadRowCalcType(DataGridViewRow row)
+        {
+            if (dataGrid.Columns.Contains("clmCalcType"))
+            {
+                var value = row.Cells["clmCalcType"].Value?.ToString();
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return value;
+                }
+            }
+
+            return GetDefaultCalcType();
+        }
+
+        private void CommitGridEdits()
+        {
+            if (dataGrid.IsCurrentCellDirty)
+            {
+                dataGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+
+            dataGrid.EndEdit(DataGridViewDataErrorContexts.Commit);
         }
 
         private static DateTime ReadDate(object? value)

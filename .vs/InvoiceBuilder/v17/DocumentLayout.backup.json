@@ -1,69 +1,73 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Visual_Projects\\InvoiceBuilder\\",
+  "WorkspaceRootPath": "C:\\GitHub\\InvoiceBuilder\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\statementbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:statementbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\services\\pdfstatementservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\pdfstatementservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\models\\statementline.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:models\\statementline.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\models\\statement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:models\\statement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|C:\\Visual_Projects\\InvoiceBuilder\\splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\services\\emaildraftservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\emaildraftservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|C:\\Visual_Projects\\InvoiceBuilder\\invoicebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:invoicebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\services\\invoicelayoutprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\invoicelayoutprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\invoicebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\invoicebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:invoicebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\services\\pdfinvoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\pdfinvoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\invoicebuilder.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\invoicebuilder.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:invoicebuilder.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\services\\invoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\models\\statement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:models\\statement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\invoicebuilder.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:invoicebuilder.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\services\\pdfstatementservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\pdfstatementservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|C:\\GitHub\\InvoiceBuilder\\statementbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:statementbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\statementbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:statementbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\models\\statementline.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:models\\statementline.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|C:\\GitHub\\InvoiceBuilder\\splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:splashform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\services\\emaildraftservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\emaildraftservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\services\\invoicelayoutprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\invoicelayoutprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\services\\pdfinvoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\pdfinvoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\services\\invoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\invoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\services\\invoicenumberservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\services\\invoicenumberservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:services\\invoicenumberservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\visual_projects\\invoicebuilder\\utils\\calendarcolumn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\utils\\calendarcolumn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:utils\\calendarcolumn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -74,7 +78,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -82,34 +86,98 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Statement.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\Models\\Statement.cs",
-              "RelativeDocumentMoniker": "Models\\Statement.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\Models\\Statement.cs",
-              "RelativeToolTip": "Models\\Statement.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAtwA0AAAAUAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "InvoiceBuilder.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.cs",
+              "RelativeDocumentMoniker": "InvoiceBuilder.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.cs",
+              "RelativeToolTip": "InvoiceBuilder.cs",
+              "ViewState": "AgIAAJgBAAAAAAAAAAAswKABAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T17:40:57.952Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "SplashForm.cs [Design]",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\SplashForm.cs",
-              "RelativeDocumentMoniker": "SplashForm.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\SplashForm.cs [Design]",
-              "RelativeToolTip": "SplashForm.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T17:22:40.453Z"
+              "WhenOpened": "2026-04-27T17:17:45.219Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
+              "Title": "StatementBuilder.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\StatementBuilder.cs",
+              "RelativeDocumentMoniker": "StatementBuilder.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\StatementBuilder.cs",
+              "RelativeToolTip": "StatementBuilder.cs",
+              "ViewState": "AgIAAJIAAAAAAAAAAAAgwJcAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T15:09:08.001Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Statement.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Models\\Statement.cs",
+              "RelativeDocumentMoniker": "Models\\Statement.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\Models\\Statement.cs",
+              "RelativeToolTip": "Models\\Statement.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAtwAsAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T17:40:57.952Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "InvoiceBuilder.Designer.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.Designer.cs",
+              "RelativeDocumentMoniker": "InvoiceBuilder.Designer.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.Designer.cs",
+              "RelativeToolTip": "InvoiceBuilder.Designer.cs",
+              "ViewState": "AgIAAHEAAAAAAAAAAADwv3oAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-27T19:39:34.224Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "InvoiceBuilder",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.csproj",
+              "RelativeDocumentMoniker": "InvoiceBuilder.csproj",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.csproj",
+              "RelativeToolTip": "InvoiceBuilder.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-16T12:58:05.613Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "PdfStatementService.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Services\\PdfStatementService.cs",
+              "RelativeDocumentMoniker": "Services\\PdfStatementService.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\Services\\PdfStatementService.cs",
+              "RelativeToolTip": "Services\\PdfStatementService.cs",
+              "ViewState": "AgIAAKwAAAAAAAAAAAAtwLYAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T15:08:30.031Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "StatementBuilder.cs [Design]",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\StatementBuilder.cs",
+              "RelativeDocumentMoniker": "StatementBuilder.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\StatementBuilder.cs [Design]",
+              "RelativeToolTip": "StatementBuilder.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T19:00:20.519Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "EmailDraftService.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\EmailDraftService.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Services\\EmailDraftService.cs",
               "RelativeDocumentMoniker": "Services\\EmailDraftService.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\EmailDraftService.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\Services\\EmailDraftService.cs",
               "RelativeToolTip": "Services\\EmailDraftService.cs",
               "ViewState": "AgIAAH4AAAAAAAAAAAAAwIcAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -117,36 +185,22 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "StatementBuilder.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\StatementBuilder.cs",
-              "RelativeDocumentMoniker": "StatementBuilder.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\StatementBuilder.cs",
-              "RelativeToolTip": "StatementBuilder.cs",
-              "ViewState": "AgIAAJIAAAAAAAAAAAAgwJgAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 9,
+              "Title": "SplashForm.cs [Design]",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\SplashForm.cs",
+              "RelativeDocumentMoniker": "SplashForm.cs",
+              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\SplashForm.cs [Design]",
+              "RelativeToolTip": "..\\..\\Visual_Projects\\InvoiceBuilder\\SplashForm.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T15:09:08.001Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-02T17:22:40.453Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "PdfStatementService.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\PdfStatementService.cs",
-              "RelativeDocumentMoniker": "Services\\PdfStatementService.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\PdfStatementService.cs",
-              "RelativeToolTip": "Services\\PdfStatementService.cs",
-              "ViewState": "AgIAAKwAAAAAAAAAAAAtwLYAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T15:08:30.031Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 7,
               "Title": "StatementLine.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\Models\\StatementLine.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Models\\StatementLine.cs",
               "RelativeDocumentMoniker": "Models\\StatementLine.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\Models\\StatementLine.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\Models\\StatementLine.cs",
               "RelativeToolTip": "Models\\StatementLine.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAqwAkAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -154,11 +208,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 8,
               "Title": "SplashForm.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\SplashForm.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\SplashForm.cs",
               "RelativeDocumentMoniker": "SplashForm.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\SplashForm.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\SplashForm.cs",
               "RelativeToolTip": "SplashForm.cs",
               "ViewState": "AgIAACgAAAAAAAAAAAAAABEAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -166,11 +220,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "InvoiceLayoutProfile.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\InvoiceLayoutProfile.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Services\\InvoiceLayoutProfile.cs",
               "RelativeDocumentMoniker": "Services\\InvoiceLayoutProfile.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\InvoiceLayoutProfile.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\Services\\InvoiceLayoutProfile.cs",
               "RelativeToolTip": "Services\\InvoiceLayoutProfile.cs",
               "ViewState": "AgIAAJYAAAAAAAAAAAAiwKEAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -178,22 +232,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "InvoiceBuilder.cs [Design]",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.cs",
-              "RelativeDocumentMoniker": "InvoiceBuilder.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.cs [Design]",
-              "RelativeToolTip": "InvoiceBuilder.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-27T19:38:54.065Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 12,
               "Title": "PdfInvoiceService.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\PdfInvoiceService.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Services\\PdfInvoiceService.cs",
               "RelativeDocumentMoniker": "Services\\PdfInvoiceService.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\PdfInvoiceService.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\Services\\PdfInvoiceService.cs",
               "RelativeToolTip": "Services\\PdfInvoiceService.cs",
               "ViewState": "AgIAALYAAAAAAAAAAAAQwMMAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -201,11 +244,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "InvoiceService.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\InvoiceService.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Services\\InvoiceService.cs",
               "RelativeDocumentMoniker": "Services\\InvoiceService.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\InvoiceService.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\Services\\InvoiceService.cs",
               "RelativeToolTip": "Services\\InvoiceService.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAEwBIAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -213,35 +256,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "InvoiceBuilder.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.cs",
-              "RelativeDocumentMoniker": "InvoiceBuilder.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.cs",
-              "RelativeToolTip": "InvoiceBuilder.cs",
-              "ViewState": "AgIAAHEBAAAAAAAAAAD4v2QBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-27T17:17:45.219Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "InvoiceBuilder.Designer.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.Designer.cs",
-              "RelativeDocumentMoniker": "InvoiceBuilder.Designer.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\InvoiceBuilder.Designer.cs",
-              "RelativeToolTip": "InvoiceBuilder.Designer.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAWwBgAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-27T19:39:34.224Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "CalendarColumn.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\Utils\\CalendarColumn.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Utils\\CalendarColumn.cs",
               "RelativeDocumentMoniker": "Utils\\CalendarColumn.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\Utils\\CalendarColumn.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\Utils\\CalendarColumn.cs",
               "RelativeToolTip": "Utils\\CalendarColumn.cs",
               "ViewState": "AgIAACUAAAAAAAAAAAAcwAIAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -249,11 +268,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "InvoiceNumberService.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\InvoiceNumberService.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Services\\InvoiceNumberService.cs",
               "RelativeDocumentMoniker": "Services\\InvoiceNumberService.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\Services\\InvoiceNumberService.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\Services\\InvoiceNumberService.cs",
               "RelativeToolTip": "Services\\InvoiceNumberService.cs",
               "ViewState": "AgIAAB0AAAAAAAAAAADwvykAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -261,11 +280,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Visual_Projects\\InvoiceBuilder\\Program.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Visual_Projects\\InvoiceBuilder\\Program.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\Program.cs",
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",

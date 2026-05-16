@@ -7,10 +7,11 @@
     <AssemblyTitle>Invoice Builder</AssemblyTitle>
     <Product>Invoice Builder</Product>
     <Company>Faith Trucking (Pty) Ltd</Company>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Version>1.1.1</Version>
+    <AssemblyVersion>1.1.1</AssemblyVersion>
     <Copyright>© 2026 Faith Trucking (Pty) Ltd</Copyright>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <FileVersion>1.1.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
