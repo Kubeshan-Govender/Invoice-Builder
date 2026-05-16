@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -129,12 +130,25 @@ namespace InvoiceBuilder.Utils
             button.Padding = new Padding(10, 0, 10, 0);
             button.Margin = new Padding(6, 3, 0, 3);
             button.Cursor = Cursors.Hand;
+            button.ImageAlign = ContentAlignment.MiddleLeft;
+            button.TextAlign = ContentAlignment.MiddleCenter;
+            button.TextImageRelation = TextImageRelation.ImageBeforeText;
+        }
+
+        public static void ApplyButtonIcon(Button button, ButtonIcon icon, ButtonRole role)
+        {
+            var iconColor = role == ButtonRole.Secondary ? Ink : Color.White;
+            button.Image = CreateButtonIcon(icon, iconColor);
+            button.ImageAlign = ContentAlignment.MiddleLeft;
+            button.TextAlign = ContentAlignment.MiddleCenter;
+            button.TextImageRelation = TextImageRelation.ImageBeforeText;
+            button.Padding = new Padding(12, 0, 14, 0);
         }
 
         public static void ApplyTotalLabel(Label label, bool emphasized = false)
         {
             label.ForeColor = emphasized ? Primary : Ink;
-            label.Font = emphasized ? new Font("Segoe UI Semibold", 12F) : TotalFont;
+            label.Font = emphasized ? new Font("Segoe UI Semibold", 14F) : new Font("Segoe UI Semibold", 11F);
         }
 
         public static void ApplyHeaderPanel(TableLayoutPanel panel)
@@ -153,6 +167,85 @@ namespace InvoiceBuilder.Utils
 
             return File.Exists(path) ? new Icon(path) : null;
         }
+
+        private static Bitmap CreateButtonIcon(ButtonIcon icon, Color color)
+        {
+            var bitmap = new Bitmap(18, 18);
+            using var graphics = Graphics.FromImage(bitmap);
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            graphics.Clear(Color.Transparent);
+
+            using var pen = new Pen(color, 1.8F)
+            {
+                StartCap = LineCap.Round,
+                EndCap = LineCap.Round,
+                LineJoin = LineJoin.Round
+            };
+
+            using var brush = new SolidBrush(color);
+
+            switch (icon)
+            {
+                case ButtonIcon.Generate:
+                    DrawDocumentIcon(graphics, pen, color);
+                    graphics.DrawLine(pen, 6, 12, 8, 14);
+                    graphics.DrawLine(pen, 8, 14, 13, 8);
+                    break;
+                case ButtonIcon.Calculate:
+                    using (var font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Pixel))
+                    {
+                        graphics.DrawString("Σ", font, brush, 3, 1);
+                    }
+                    break;
+                case ButtonIcon.Add:
+                    graphics.DrawLine(pen, 9, 4, 9, 14);
+                    graphics.DrawLine(pen, 4, 9, 14, 9);
+                    break;
+                case ButtonIcon.Delete:
+                    graphics.DrawLine(pen, 5, 6, 13, 6);
+                    graphics.DrawLine(pen, 7, 6, 7, 14);
+                    graphics.DrawLine(pen, 11, 6, 11, 14);
+                    graphics.DrawRectangle(pen, 6, 6, 6, 9);
+                    graphics.DrawLine(pen, 7, 4, 11, 4);
+                    break;
+                case ButtonIcon.Statement:
+                    graphics.DrawRectangle(pen, 4, 5, 9, 10);
+                    graphics.DrawLine(pen, 7, 3, 14, 3);
+                    graphics.DrawLine(pen, 14, 3, 14, 12);
+                    graphics.DrawLine(pen, 7, 8, 11, 8);
+                    graphics.DrawLine(pen, 7, 11, 11, 11);
+                    break;
+                case ButtonIcon.Settings:
+                    graphics.DrawEllipse(pen, 5, 5, 8, 8);
+                    graphics.DrawEllipse(pen, 8, 8, 2, 2);
+                    for (var i = 0; i < 8; i++)
+                    {
+                        var angle = i * Math.PI / 4;
+                        var x1 = 9 + Math.Cos(angle) * 5;
+                        var y1 = 9 + Math.Sin(angle) * 5;
+                        var x2 = 9 + Math.Cos(angle) * 7;
+                        var y2 = 9 + Math.Sin(angle) * 7;
+                        graphics.DrawLine(pen, (float)x1, (float)y1, (float)x2, (float)y2);
+                    }
+                    break;
+            }
+
+            return bitmap;
+        }
+
+        private static void DrawDocumentIcon(Graphics graphics, Pen pen, Color color)
+        {
+            using var path = new GraphicsPath();
+            path.AddLine(5, 3, 11, 3);
+            path.AddLine(11, 3, 14, 6);
+            path.AddLine(14, 6, 14, 15);
+            path.AddLine(14, 15, 5, 15);
+            path.CloseFigure();
+            graphics.DrawPath(pen, path);
+            graphics.DrawLine(pen, 11, 3, 11, 6);
+            graphics.DrawLine(pen, 11, 6, 14, 6);
+            graphics.DrawLine(pen, 7, 8, 12, 8);
+        }
     }
 
     internal enum ButtonRole
@@ -160,5 +253,15 @@ namespace InvoiceBuilder.Utils
         Primary,
         Secondary,
         Accent
+    }
+
+    internal enum ButtonIcon
+    {
+        Generate,
+        Calculate,
+        Add,
+        Delete,
+        Statement,
+        Settings
     }
 }
