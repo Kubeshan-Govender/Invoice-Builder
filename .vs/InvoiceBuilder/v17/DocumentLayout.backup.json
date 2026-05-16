@@ -92,7 +92,7 @@
               "RelativeDocumentMoniker": "InvoiceBuilder.cs",
               "ToolTip": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.cs",
               "RelativeToolTip": "InvoiceBuilder.cs",
-              "ViewState": "AgIAAJgBAAAAAAAAAAAswKABAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAAJgBAAAAAAAAAAAswKIBAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-27T17:17:45.219Z",
               "EditorCaption": ""
@@ -107,7 +107,8 @@
               "RelativeToolTip": "StatementBuilder.cs",
               "ViewState": "AgIAAJIAAAAAAAAAAAAgwJcAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T15:09:08.001Z"
+              "WhenOpened": "2026-05-02T15:09:08.001Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -119,8 +120,7 @@
               "RelativeToolTip": "Models\\Statement.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAtwAsAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T17:40:57.952Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-02T17:40:57.952Z"
             },
             {
               "$type": "Document",
@@ -132,8 +132,7 @@
               "RelativeToolTip": "InvoiceBuilder.Designer.cs",
               "ViewState": "AgIAAHEAAAAAAAAAAADwv3oAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-27T19:39:34.224Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-27T19:39:34.224Z"
             },
             {
               "$type": "Document",
@@ -144,8 +143,7 @@
               "ToolTip": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.csproj",
               "RelativeToolTip": "InvoiceBuilder.csproj",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-05-16T12:58:05.613Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-16T12:58:05.613Z"
             },
             {
               "$type": "Document",
@@ -157,8 +155,7 @@
               "RelativeToolTip": "Services\\PdfStatementService.cs",
               "ViewState": "AgIAAKwAAAAAAAAAAAAtwLYAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T15:08:30.031Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-02T15:08:30.031Z"
             },
             {
               "$type": "Document",
