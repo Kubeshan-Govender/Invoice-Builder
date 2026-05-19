@@ -32,8 +32,6 @@ namespace InvoiceBuilder.Services
 
                     page.DefaultTextStyle(x => x.FontSize(_layout.DefaultFontSize));
 
-                    page.Header().Element(header => ComposeHeader(header, invoice));
-
                     page.Content().Element(content => ComposeContent(content, invoice));
 
                     page.Footer().Row(row =>
@@ -143,6 +141,8 @@ namespace InvoiceBuilder.Services
         {
             container.Column(col =>
             {
+                col.Item().Element(header => ComposeHeader(header, invoice));
+
                 col.Item().PaddingTop(20).Table(table =>
                 {
                     table.ColumnsDefinition(columns =>
@@ -167,10 +167,12 @@ namespace InvoiceBuilder.Services
                             cell.Border(1)
                                 .BorderColor(Colors.White)
                                 .Background(_layout.ThemeColor)
-                                .Padding(5)
+                                .PaddingVertical(3)
+                                .PaddingHorizontal(2)
                                 .AlignCenter()
                                 .AlignMiddle()
                                 .Text(text)
+                                .FontSize(8)
                                 .FontColor(Colors.White)
                                 .Bold();
                         }
@@ -235,7 +237,8 @@ namespace InvoiceBuilder.Services
         {
             var content = cell.Border(1)
                 .BorderColor(_layout.BorderColor)
-                .Padding(5)
+                .PaddingVertical(2)
+                .PaddingHorizontal(3)
                 .AlignMiddle();
 
             content = column.Alignment switch
@@ -245,7 +248,7 @@ namespace InvoiceBuilder.Services
                 _ => content
             };
 
-            content.Text(column.Value(item, rowNumber));
+            content.Text(column.Value(item, rowNumber)).FontSize(8);
         }
     }
 }
