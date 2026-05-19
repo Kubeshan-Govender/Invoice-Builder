@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\GitHub\\InvoiceBuilder\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\invoicebuilder.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:invoicebuilder.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\invoicebuilder.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:invoicebuilder.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -21,10 +25,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|C:\\GitHub\\InvoiceBuilder\\invoicebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:invoicebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\invoicebuilder.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
-      "RelativeMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|solutionrelative:invoicebuilder.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{789863C9-F637-4CF2-BA88-C9670AF9EDA6}|InvoiceBuilder.csproj|c:\\github\\invoicebuilder\\models\\statement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -86,24 +86,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "InvoiceBuilder.cs",
-              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.cs",
-              "RelativeDocumentMoniker": "InvoiceBuilder.cs",
-              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.cs",
-              "RelativeToolTip": "InvoiceBuilder.cs",
-              "ViewState": "AgIAAJUBAAAAAAAAAAA7wJgBAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-27T17:17:45.219Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -132,20 +119,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "InvoiceBuilder.Designer.cs",
               "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.Designer.cs",
               "RelativeDocumentMoniker": "InvoiceBuilder.Designer.cs",
               "ToolTip": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.Designer.cs",
               "RelativeToolTip": "InvoiceBuilder.Designer.cs",
-              "ViewState": "AgIAAGQBAAAAAAAAAAAowJYBAAAzAAAAAAAAAA==",
+              "ViewState": "AgIAAGQBAAAAAAAAAAAowG8BAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-27T19:39:34.224Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "GeneratedInvoiceRecord.cs",
               "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Models\\GeneratedInvoiceRecord.cs",
               "RelativeDocumentMoniker": "Models\\GeneratedInvoiceRecord.cs",
@@ -157,7 +144,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "PdfInvoiceService.cs",
               "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\Services\\PdfInvoiceService.cs",
               "RelativeDocumentMoniker": "Services\\PdfInvoiceService.cs",
@@ -169,7 +156,32 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "InvoiceBuilder",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.csproj",
+              "RelativeDocumentMoniker": "InvoiceBuilder.csproj",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.csproj",
+              "RelativeToolTip": "InvoiceBuilder.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-16T12:58:05.613Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 4,
+              "Title": "InvoiceBuilder.cs",
+              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.cs",
+              "RelativeDocumentMoniker": "InvoiceBuilder.cs",
+              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.cs",
+              "RelativeToolTip": "InvoiceBuilder.cs",
+              "ViewState": "AgIAAJUBAAAAAAAAAAA7wJgBAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-27T17:17:45.219Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "InvoiceBuilder.cs [Design]",
               "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.cs",
               "RelativeDocumentMoniker": "InvoiceBuilder.cs",
@@ -177,17 +189,6 @@
               "RelativeToolTip": "InvoiceBuilder.cs [Design]*",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-19T16:46:20.845Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "InvoiceBuilder",
-              "DocumentMoniker": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.csproj",
-              "RelativeDocumentMoniker": "InvoiceBuilder.csproj",
-              "ToolTip": "C:\\GitHub\\InvoiceBuilder\\InvoiceBuilder.csproj",
-              "RelativeToolTip": "InvoiceBuilder.csproj",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-05-16T12:58:05.613Z"
             },
             {
               "$type": "Document",
