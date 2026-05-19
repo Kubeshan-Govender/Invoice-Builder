@@ -119,16 +119,23 @@ namespace InvoiceBuilder.Services
                     new()
                     {
                         Header = "No.",
-                        Width = 30,
+                        Width = 24,
                         Alignment = InvoiceTextAlignment.Center,
                         Value = (_, index) => index.ToString()
                     },
                     new()
                     {
                         Header = "Date",
-                        Width = 70,
+                        Width = 58,
                         Alignment = InvoiceTextAlignment.Center,
                         Value = (item, _) => item.Date.ToString("yyyy/MM/dd")
+                    },
+                    new()
+                    {
+                        Header = "Invoice #",
+                        Width = 62,
+                        Alignment = InvoiceTextAlignment.Center,
+                        Value = (item, _) => item.SourceInvoiceNumber
                     },
                     new()
                     {
@@ -140,28 +147,28 @@ namespace InvoiceBuilder.Services
                     new()
                     {
                         Header = "Weight",
-                        Width = 70,
+                        Width = 52,
                         Alignment = InvoiceTextAlignment.Right,
                         Value = (item, _) => item.Weight.ToString("N0")
                     },
                     new()
                     {
                         Header = "Qty",
-                        Width = 40,
+                        Width = 32,
                         Alignment = InvoiceTextAlignment.Center,
                         Value = (item, _) => item.Quantity.ToString()
                     },
                     new()
                     {
                         Header = "Unit Price",
-                        Width = 80,
+                        Width = 68,
                         Alignment = InvoiceTextAlignment.Right,
                         Value = (item, _) => $"R {item.UnitPrice:N2}"
                     },
                     new()
                     {
                         Header = "Amount",
-                        Width = 80,
+                        Width = 70,
                         Alignment = InvoiceTextAlignment.Right,
                         Value = (item, _) => $"R {item.Amount:N2}"
                     }
