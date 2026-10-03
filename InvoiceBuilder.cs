@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace InvoiceBuilder
@@ -23,8 +24,17 @@ namespace InvoiceBuilder
         private readonly Button _btnGenerateStatement = new();
         private readonly Button _btnSettings = new();
         private readonly Button _btnDeleteRow = new();
+        private readonly Button _btnCheckGrvs = new();
+        private readonly Button _btnOrderGrvs = new();
+        private readonly Label _lblCargoTypeHeader = new();
+        private readonly ComboBox _cboCargoType = new();
+        private readonly FlowLayoutPanel _headerActionsPanel = new();
+        private readonly Services.CargoSpreadsheetService _cargoSpreadsheetService = new();
         private bool _isLoadingDraft;
         private bool _isUpdatingTotals;
+        private bool _duplicateCheckPerformed;
+        private DateTime _invoiceDate = DateTime.Today;
+        private string _vesselName = string.Empty;
 
         public InvoiceBuilder()
         {
@@ -40,8 +50,9 @@ namespace InvoiceBuilder
             var invoice = new Invoice
             {
                 InvoiceNumber = int.Parse(lblInvoiceNum.Text),
-                Date = dtpDate.Value,
-                Vessel = txtVessel.Text,
+                CargoType = _cboCargoType.SelectedItem?.ToString() ?? CargoTypes.Spodumene,
+                Date = _invoiceDate,
+                Vessel = _vesselName,
                 Customer = "Stanley"
             };
 
@@ -55,10 +66,13 @@ namespace InvoiceBuilder
                     Date = ReadDate(row.Cells["clmDate"].Value),
                     SourceInvoiceNumber = row.Cells["clmInvoiceNum"].Value?.ToString()?.Trim() ?? string.Empty,
                     Description = row.Cells["clmDescription"].Value?.ToString() ?? string.Empty,
+                    CargoReference = row.Cells["clmCargoReference"].Value?.ToString()?.Trim() ?? string.Empty,
+                    SerialBagNumber = row.Cells["clmSerialBag"].Value?.ToString()?.Trim() ?? string.Empty,
                     Weight = ReadDecimal(row.Cells["clmWeight"].Value),
                     Quantity = ReadInt(row.Cells["clmQuantity"].Value),
                     UnitPrice = ReadDecimal(row.Cells["clmPrice"].Value),
-                    CalcType = ReadRowCalcType(row)
+                    CalcType = ReadRowCalcType(row),
+                    FullEmpty = row.Cells["clmFullEmpty"].Value?.ToString() ?? string.Empty
                 };
 
                 invoice.Loads.Add(item);
@@ -75,9 +89,13 @@ namespace InvoiceBuilder
 
         private void ConfigureGrid()
         {
-            cboCalcType.SelectedIndex = 0;
+            cboCalcType.SelectedItem = _cboCargoType.SelectedItem?.ToString() == CargoTypes.Containers ? "Flat" : "Weight";
             UseDatePickerColumn();
             EnsureCalculationColumn();
+            EnsureFullEmptyColumn();
+            EnsureSerialBagColumn();
+            EnsureCargoReferenceColumn();
+            ConfigureCargoTypeSelector();
             clmInvoiceNum.ReadOnly = false;
             dataGrid.AllowUserToAddRows = false;
             dataGrid.AllowUserToResizeColumns = false;
@@ -89,20 +107,136 @@ namespace InvoiceBuilder
             {
                 column.Resizable = DataGridViewTriState.False;
             }
+            UpdateCargoColumnLabels();
 
             btnGenerate.AutoSize = true;
             btnCalculate.AutoSize = true;
             btnAddRow.AutoSize = true;
+            ConfigureGenerateInvoiceButton();
             ConfigureStatementButton();
             ConfigureSettingsButton();
             ConfigureDeleteRowButton();
+            ConfigureGrvButtons();
+        }
+
+        private void ConfigureCargoTypeSelector()
+        {
+            tableLayoutHeader.SuspendLayout();
+            tableLayoutHeader.Controls.Clear();
+            tableLayoutHeader.ColumnCount = 4;
+            tableLayoutHeader.ColumnStyles.Clear();
+            tableLayoutHeader.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18F));
+            tableLayoutHeader.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18F));
+            tableLayoutHeader.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+            tableLayoutHeader.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 44F));
+            tableLayoutHeader.RowCount = 2;
+
+            _lblCargoTypeHeader.Text = "Cargo Type:";
+            _lblCargoTypeHeader.Dock = DockStyle.Fill;
+            _lblCargoTypeHeader.TextAlign = ContentAlignment.MiddleLeft;
+            _lblCargoTypeHeader.Margin = new Padding(4, 0, 4, 3);
+
+            _cboCargoType.DropDownStyle = ComboBoxStyle.DropDownList;
+            _cboCargoType.Dock = DockStyle.Fill;
+            _cboCargoType.Items.AddRange(CargoTypes.All.Cast<object>().ToArray());
+            _cboCargoType.SelectedItem = CargoTypes.Spodumene;
+
+            _headerActionsPanel.Dock = DockStyle.Fill;
+            _headerActionsPanel.FlowDirection = FlowDirection.RightToLeft;
+            _headerActionsPanel.WrapContents = false;
+            _headerActionsPanel.Padding = new Padding(4);
+
+            lblInvoiceNumHeader.Text = "Invoice Number:";
+            lblCalcTypeHeader.Text = "Calculation:";
+            tableLayoutHeader.Controls.Add(lblInvoiceNumHeader, 0, 0);
+            tableLayoutHeader.Controls.Add(lblInvoiceNum, 0, 1);
+            tableLayoutHeader.Controls.Add(lblCalcTypeHeader, 1, 0);
+            tableLayoutHeader.Controls.Add(cboCalcType, 1, 1);
+            tableLayoutHeader.Controls.Add(_lblCargoTypeHeader, 2, 0);
+            tableLayoutHeader.Controls.Add(_cboCargoType, 2, 1);
+            tableLayoutHeader.Controls.Add(_headerActionsPanel, 3, 0);
+            tableLayoutHeader.SetRowSpan(_headerActionsPanel, 2);
+            tableLayoutHeader.ResumeLayout(true);
+        }
+
+        private void EnsureFullEmptyColumn()
+        {
+            if (dataGrid.Columns.Contains("clmFullEmpty"))
+            {
+                return;
+            }
+
+            dataGrid.Columns.Add(new DataGridViewComboBoxColumn
+            {
+                DataSource = new[] { "Full", "Empty" },
+                DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton,
+                FillWeight = 105F,
+                HeaderText = "FULL/EMPTY",
+                Name = "clmFullEmpty",
+                Resizable = DataGridViewTriState.False,
+                Visible = false
+            });
+        }
+
+        private void UpdateCargoColumnLabels()
+        {
+            var cargoType = _cboCargoType.SelectedItem?.ToString() ?? CargoTypes.Spodumene;
+            dataGrid.Columns["clmDescription"].HeaderText = "DESCRIPTION";
+            dataGrid.Columns["clmCargoReference"].HeaderText = cargoType switch
+            {
+                CargoTypes.Containers => "CONTAINER NUMBER",
+                CargoTypes.BreakBulk => "PRODUCT",
+                _ => "WEIGHBRIDGE TICKET"
+            };
+            dataGrid.Columns["clmWeight"].HeaderText = cargoType == CargoTypes.Containers ? "GROSS WEIGHT" : "WEIGHT";
+            dataGrid.Columns["clmPrice"].HeaderText = "RATE";
+            dataGrid.Columns["clmPrice"].ToolTipText = cargoType == CargoTypes.Spodumene
+                ? "The Spodumene template has no Rate column; this rate is used to calculate the invoice PDF."
+                : "This rate is written to the cargo spreadsheet and used to calculate the invoice PDF.";
+            dataGrid.Columns["clmFullEmpty"].Visible = cargoType == CargoTypes.Containers;
+            dataGrid.Columns["clmSerialBag"].Visible = cargoType == CargoTypes.BreakBulk;
+        }
+
+        private void EnsureSerialBagColumn()
+        {
+            if (dataGrid.Columns.Contains("clmSerialBag"))
+            {
+                return;
+            }
+
+            dataGrid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                FillWeight = 115F,
+                HeaderText = "SERIAL/BAG NR",
+                Name = "clmSerialBag",
+                Resizable = DataGridViewTriState.False,
+                Visible = false
+            });
+        }
+
+        private void EnsureCargoReferenceColumn()
+        {
+            if (dataGrid.Columns.Contains("clmCargoReference"))
+            {
+                return;
+            }
+
+            var descriptionIndex = dataGrid.Columns["clmDescription"].Index;
+            dataGrid.Columns.Insert(descriptionIndex + 1, new DataGridViewTextBoxColumn
+            {
+                FillWeight = 185F,
+                HeaderText = "WEIGHBRIDGE TICKET",
+                Name = "clmCargoReference",
+                Resizable = DataGridViewTriState.False
+            });
         }
 
         private void ApplyVisualStyle()
         {
             AppStyles.ApplyForm(this);
             Text = "Faith Trucking Invoice Builder";
-            MinimumSize = new Size(920, 620);
+            MinimumSize = new Size(1150, 620);
+            Width = Math.Max(Width, 1150);
 
             AppStyles.ApplyHeaderPanel(tableLayoutHeader);
             FixHeaderSpacing();
@@ -115,18 +249,21 @@ namespace InvoiceBuilder
             AppStyles.ApplyTotalLabel(lblVAT);
             AppStyles.ApplyTotalLabel(lblTotal, emphasized: true);
 
-            AppStyles.ApplyButton(btnGenerate, ButtonRole.Primary);
             AppStyles.ApplyButton(btnCalculate, ButtonRole.Secondary);
             AppStyles.ApplyButton(btnAddRow, ButtonRole.Secondary);
             AppStyles.ApplyButton(_btnDeleteRow, ButtonRole.Secondary);
+            AppStyles.ApplyButton(_btnCheckGrvs, ButtonRole.Secondary);
+            AppStyles.ApplyButton(_btnOrderGrvs, ButtonRole.Secondary);
             AppStyles.ApplyButton(_btnGenerateStatement, ButtonRole.Accent);
             AppStyles.ApplyButton(_btnSettings, ButtonRole.Secondary);
-            AppStyles.ApplyButtonIcon(btnGenerate, ButtonIcon.Generate, ButtonRole.Primary);
             AppStyles.ApplyButtonIcon(btnCalculate, ButtonIcon.Calculate, ButtonRole.Secondary);
             AppStyles.ApplyButtonIcon(btnAddRow, ButtonIcon.Add, ButtonRole.Secondary);
             AppStyles.ApplyButtonIcon(_btnDeleteRow, ButtonIcon.Delete, ButtonRole.Secondary);
             AppStyles.ApplyButtonIcon(_btnGenerateStatement, ButtonIcon.Statement, ButtonRole.Accent);
             AppStyles.ApplyButtonIcon(_btnSettings, ButtonIcon.Settings, ButtonRole.Secondary);
+
+            AppStyles.ApplyControl(_lblCargoTypeHeader);
+            AppStyles.ApplyControl(_cboCargoType);
         }
 
         private void ConfigureTotalsPanel()
@@ -169,7 +306,7 @@ namespace InvoiceBuilder
             tableLayoutHeader.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
             tableLayoutHeader.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
 
-            foreach (var label in new[] { lblInvoiceNumHeader, lblDateHeader, lblVesselHeader, lblCalcTypeHeader, lblInvoiceNum })
+            foreach (var label in new[] { lblInvoiceNumHeader, lblCalcTypeHeader, lblInvoiceNum, _lblCargoTypeHeader })
             {
                 label.AutoSize = false;
                 label.TextAlign = ContentAlignment.MiddleLeft;
@@ -177,12 +314,10 @@ namespace InvoiceBuilder
             }
 
             lblInvoiceNum.Margin = new Padding(4, 2, 4, 2);
-            txtVessel.Margin = new Padding(4, 2, 4, 4);
-            dtpDate.Margin = new Padding(4, 2, 4, 4);
             cboCalcType.Margin = new Padding(4, 2, 4, 4);
-            dtpDate.Dock = DockStyle.Fill;
+            _cboCargoType.Margin = new Padding(4, 2, 4, 4);
             cboCalcType.Dock = DockStyle.Fill;
-            txtVessel.Dock = DockStyle.Fill;
+            _cboCargoType.Dock = DockStyle.Fill;
         }
 
         private void ConfigureStatementButton()
@@ -192,9 +327,9 @@ namespace InvoiceBuilder
             _btnGenerateStatement.Height = btnGenerate.Height;
             _btnGenerateStatement.Click += (_, _) => OpenStatementBuilder();
 
-            if (!flowLayoutPanel1.Controls.Contains(_btnGenerateStatement))
+            if (!_headerActionsPanel.Controls.Contains(_btnGenerateStatement))
             {
-                flowLayoutPanel1.Controls.Add(_btnGenerateStatement);
+                _headerActionsPanel.Controls.Add(_btnGenerateStatement);
             }
 
             AppStyles.ApplyButton(_btnGenerateStatement, ButtonRole.Accent);
@@ -207,12 +342,25 @@ namespace InvoiceBuilder
             _btnSettings.Height = btnGenerate.Height;
             _btnSettings.Click += (_, _) => OpenSettings();
 
-            if (!flowLayoutPanel1.Controls.Contains(_btnSettings))
+            if (!_headerActionsPanel.Controls.Contains(_btnSettings))
             {
-                flowLayoutPanel1.Controls.Add(_btnSettings);
+                _headerActionsPanel.Controls.Add(_btnSettings);
             }
 
             AppStyles.ApplyButton(_btnSettings, ButtonRole.Secondary);
+        }
+
+        private void ConfigureGenerateInvoiceButton()
+        {
+            flowLayoutPanel1.Controls.Remove(btnGenerate);
+            btnGenerate.Text = "Generate Invoice";
+            btnGenerate.AutoSize = true;
+            btnGenerate.Height = 38;
+            btnGenerate.Click -= btnGenerate_Click;
+            btnGenerate.Click += (_, _) => GenerateInvoicePdf();
+            _headerActionsPanel.Controls.Add(btnGenerate);
+            AppStyles.ApplyButton(btnGenerate, ButtonRole.Primary);
+            AppStyles.ApplyButtonIcon(btnGenerate, ButtonIcon.Generate, ButtonRole.Primary);
         }
 
         private void ConfigureDeleteRowButton()
@@ -230,11 +378,104 @@ namespace InvoiceBuilder
             AppStyles.ApplyButton(_btnDeleteRow, ButtonRole.Secondary);
         }
 
+        private void ConfigureGrvButtons()
+        {
+            _btnCheckGrvs.Text = "Check GRVs";
+            _btnCheckGrvs.AutoSize = true;
+            _btnCheckGrvs.Height = btnGenerate.Height;
+            _btnCheckGrvs.Click += (_, _) => CheckDuplicateGrvs();
+            flowLayoutPanel1.Controls.Add(_btnCheckGrvs);
+            AppStyles.ApplyButton(_btnCheckGrvs, ButtonRole.Secondary);
+
+            _btnOrderGrvs.Text = "Order GRVs";
+            _btnOrderGrvs.AutoSize = true;
+            _btnOrderGrvs.Height = btnGenerate.Height;
+            _btnOrderGrvs.Click += (_, _) => OrderGrvsLowToHigh();
+            flowLayoutPanel1.Controls.Add(_btnOrderGrvs);
+            AppStyles.ApplyButton(_btnOrderGrvs, ButtonRole.Secondary);
+        }
+
+        private void CheckDuplicateGrvs()
+        {
+            CommitGridEdits();
+            _duplicateCheckPerformed = true;
+            var duplicates = UpdateDuplicateGrvHighlights();
+            if (duplicates.Count == 0)
+            {
+                MessageBox.Show("No duplicate GRV numbers were found.", "Check GRVs", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            MessageBox.Show(
+                $"Highlighted rows with duplicate GRV numbers: {string.Join(", ", duplicates)}.\n\nUse Order GRVs to sort from low to high.",
+                "Duplicate GRVs found",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+        }
+
+        private List<string> UpdateDuplicateGrvHighlights()
+        {
+            var duplicateGroups = dataGrid.Rows
+                .Cast<DataGridViewRow>()
+                .Where(row => !row.IsNewRow)
+                .Select(row => new { Row = row, Grv = row.Cells["clmInvoiceNum"].Value?.ToString()?.Trim() ?? string.Empty })
+                .Where(entry => !string.IsNullOrWhiteSpace(entry.Grv))
+                .GroupBy(entry => entry.Grv, StringComparer.OrdinalIgnoreCase)
+                .Where(group => group.Count() > 1)
+                .ToList();
+
+            foreach (DataGridViewRow row in dataGrid.Rows)
+            {
+                if (row.IsNewRow) continue;
+                row.DefaultCellStyle.BackColor = dataGrid.DefaultCellStyle.BackColor;
+                row.DefaultCellStyle.ForeColor = dataGrid.DefaultCellStyle.ForeColor;
+            }
+
+            foreach (var group in duplicateGroups)
+            {
+                foreach (var entry in group)
+                {
+                    entry.Row.DefaultCellStyle.BackColor = Color.MistyRose;
+                    entry.Row.DefaultCellStyle.ForeColor = Color.DarkRed;
+                }
+            }
+
+            return duplicateGroups.Select(group => group.Key).ToList();
+        }
+
+        private void OrderGrvsLowToHigh()
+        {
+            CommitGridEdits();
+            dataGrid.Sort(new GrvRowComparer());
+            NumberRows();
+            CalculateAndDisplayTotals();
+            SaveCurrentDraft();
+            if (_duplicateCheckPerformed)
+            {
+                UpdateDuplicateGrvHighlights();
+            }
+        }
+
+        private sealed class GrvRowComparer : System.Collections.IComparer
+        {
+            public int Compare(object x, object y)
+            {
+                var left = (x as DataGridViewRow)?.Cells["clmInvoiceNum"].Value?.ToString()?.Trim() ?? string.Empty;
+                var right = (y as DataGridViewRow)?.Cells["clmInvoiceNum"].Value?.ToString()?.Trim() ?? string.Empty;
+                var leftIsNumeric = decimal.TryParse(left, NumberStyles.Number, CultureInfo.InvariantCulture, out var leftNumber);
+                var rightIsNumeric = decimal.TryParse(right, NumberStyles.Number, CultureInfo.InvariantCulture, out var rightNumber);
+
+                if (leftIsNumeric && rightIsNumeric) return leftNumber.CompareTo(rightNumber);
+                if (leftIsNumeric != rightIsNumeric) return leftIsNumeric ? -1 : 1;
+                if (string.IsNullOrEmpty(left) != string.IsNullOrEmpty(right)) return string.IsNullOrEmpty(left) ? 1 : -1;
+                return StringComparer.OrdinalIgnoreCase.Compare(left, right);
+            }
+        }
+
         private void WireEvents()
         {
             btnAddRow.Click += (_, _) => AddLoadRowAndFocusDate();
             btnCalculate.Click += (_, _) => CalculateAndDisplayTotals();
-            btnGenerate.Click += (_, _) => GenerateInvoicePdf();
             AcceptButton = btnAddRow;
             KeyPreview = true;
             KeyDown += InvoiceBuilder_KeyDown;
@@ -243,10 +484,24 @@ namespace InvoiceBuilder
                 CommitGridEdits();
                 SaveCurrentDraft();
             };
-            txtVessel.TextChanged += (_, _) => SaveCurrentDraft();
-            dtpDate.ValueChanged += (_, _) => SaveCurrentDraft();
             cboCalcType.SelectedIndexChanged += (_, _) =>
             {
+                CalculateAndDisplayTotals();
+                SaveCurrentDraft();
+            };
+            _cboCargoType.SelectedIndexChanged += (_, _) =>
+            {
+                var defaultCalcType = _cboCargoType.SelectedItem?.ToString() == CargoTypes.Containers ? "Flat" : "Weight";
+                cboCalcType.SelectedItem = defaultCalcType;
+                foreach (DataGridViewRow row in dataGrid.Rows)
+                {
+                    if (!row.IsNewRow)
+                    {
+                        row.Cells["clmCalcType"].Value = defaultCalcType;
+                    }
+                }
+
+                UpdateCargoColumnLabels();
                 CalculateAndDisplayTotals();
                 SaveCurrentDraft();
             };
@@ -260,6 +515,11 @@ namespace InvoiceBuilder
             };
             dataGrid.CellValueChanged += (_, e) =>
             {
+                if (_duplicateCheckPerformed && e.RowIndex >= 0)
+                {
+                    UpdateDuplicateGrvHighlights();
+                }
+
                 if (!_isUpdatingTotals && e.RowIndex >= 0 && e.ColumnIndex >= 0)
                 {
                     var columnName = dataGrid.Columns[e.ColumnIndex].Name;
@@ -306,12 +566,12 @@ namespace InvoiceBuilder
             _isLoadingDraft = true;
             dataGrid.Rows.Clear();
             lblInvoiceNum.Text = _invoiceNumberService.GetNextInvoiceNumberPreview().ToString(CultureInfo.InvariantCulture);
-            dtpDate.Value = DateTime.Today;
-            txtVessel.Clear();
+            _invoiceDate = DateTime.Today;
+            _vesselName = string.Empty;
             lblSubTotal.Text = FormatCurrency(0);
             lblVAT.Text = FormatCurrency(0);
             lblTotal.Text = FormatCurrency(0);
-            cboCalcType.SelectedIndex = 0;
+            cboCalcType.SelectedItem = _cboCargoType.SelectedItem?.ToString() == CargoTypes.Containers ? "Flat" : "Weight";
             AddLoadRow();
             _isLoadingDraft = false;
             SaveCurrentDraft();
@@ -329,9 +589,13 @@ namespace InvoiceBuilder
             row.Cells["clmNum"].Value = rowIndex + 1;
             row.Cells["clmDate"].Value = ReadDate(previousRow?.Cells["clmDate"].Value);
             row.Cells["clmCalcType"].Value = GetDefaultCalcType();
-            row.Cells["clmDescription"].Value = previousRow?.Cells["clmDescription"].Value;
+            row.Cells["clmCargoReference"].Value = _cboCargoType.SelectedItem?.ToString() == CargoTypes.BreakBulk
+                ? previousRow?.Cells["clmCargoReference"].Value
+                : string.Empty;
             row.Cells["clmQuantity"].Value = previousRow?.Cells["clmQuantity"].Value ?? 1;
             row.Cells["clmPrice"].Value = previousRow?.Cells["clmPrice"].Value;
+            row.Cells["clmFullEmpty"].Value = null;
+            row.Cells["clmSerialBag"].Value = string.Empty;
             NumberRows();
             SaveCurrentDraft();
             return rowIndex;
@@ -408,11 +672,14 @@ namespace InvoiceBuilder
             _isLoadingDraft = true;
             dataGrid.Rows.Clear();
             lblInvoiceNum.Text = draft.InvoiceNumber.ToString(CultureInfo.InvariantCulture);
-            dtpDate.Value = draft.Date == default ? DateTime.Today : draft.Date;
-            txtVessel.Text = draft.Vessel;
+            _invoiceDate = draft.Date == default ? DateTime.Today : draft.Date;
+            _vesselName = draft.Vessel?.Trim() ?? string.Empty;
+            _cboCargoType.SelectedItem = CargoTypes.All.Contains(draft.CargoType) ? draft.CargoType : CargoTypes.Spodumene;
+            UpdateCargoColumnLabels();
 
-            var calcType = draft.Loads.FirstOrDefault()?.CalcType ?? "Weight";
-            cboCalcType.SelectedItem = cboCalcType.Items.Contains(calcType) ? calcType : "Weight";
+            var defaultCalcType = draft.CargoType == CargoTypes.Containers ? "Flat" : "Weight";
+            var calcType = draft.Loads.FirstOrDefault()?.CalcType ?? defaultCalcType;
+            cboCalcType.SelectedItem = cboCalcType.Items.Contains(calcType) ? calcType : defaultCalcType;
 
             foreach (var load in draft.Loads)
             {
@@ -422,10 +689,13 @@ namespace InvoiceBuilder
                 row.Cells["clmCalcType"].Value = string.IsNullOrWhiteSpace(load.CalcType) ? GetDefaultCalcType() : load.CalcType;
                 row.Cells["clmInvoiceNum"].Value = load.SourceInvoiceNumber;
                 row.Cells["clmDescription"].Value = load.Description;
+                row.Cells["clmCargoReference"].Value = load.CargoReference;
                 row.Cells["clmWeight"].Value = load.Weight == 0 ? null : load.Weight;
                 row.Cells["clmQuantity"].Value = load.Quantity == 0 ? 1 : load.Quantity;
                 row.Cells["clmPrice"].Value = load.UnitPrice == 0 ? null : load.UnitPrice;
                 row.Cells["clmAmount"].Value = load.Amount == 0 ? null : load.Amount.ToString("N2", CultureInfo.InvariantCulture);
+                row.Cells["clmFullEmpty"].Value = load.FullEmpty is "Full" or "Empty" ? load.FullEmpty : null;
+                row.Cells["clmSerialBag"].Value = load.SerialBagNumber;
             }
 
             if (dataGrid.Rows.Count == 0)
@@ -542,37 +812,45 @@ namespace InvoiceBuilder
             try
             {
                 CommitGridEdits();
-                var invoice = BuildInvoiceFromUI(validateSourceInvoiceNumbers: true);
-                if (invoice.Loads.Count == 0)
+                if (!dataGrid.Rows.Cast<DataGridViewRow>().Any(row => !row.IsNewRow && !IsEmptyRow(row)))
                 {
                     MessageBox.Show("Add at least one load before generating the invoice.", "Invoice Builder", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
+                using (var detailsForm = new InvoiceDetailsForm(_invoiceDate, _vesselName))
+                {
+                    if (detailsForm.ShowDialog(this) != DialogResult.OK)
+                    {
+                        return;
+                    }
+
+                    _invoiceDate = detailsForm.InvoiceDate;
+                    _vesselName = detailsForm.VesselName;
+                    SaveCurrentDraft();
+                }
+
+                var invoice = BuildInvoiceFromUI(validateSourceInvoiceNumbers: true);
                 SortLoadsByInvoiceNumber(invoice);
 
                 var fullPath = BuildInvoicePath(invoice);
 
-                using var saveDialog = new SaveFileDialog
+                var settings = _settingsService.Load();
+                LoadingDialog.Run(this, "Generating the invoice and cargo spreadsheet…", () => Task.Run(() =>
                 {
-                    Filter = "PDF files (*.pdf)|*.pdf",
-                    FileName = Path.GetFileName(fullPath),
-                    InitialDirectory = Path.GetDirectoryName(fullPath),
-                    Title = "Save invoice PDF"
-                };
+                    var cargoSpreadsheetPath = _cargoSpreadsheetService.SaveCargoSpreadsheet(
+                        invoice,
+                        fullPath,
+                        settings.DefaultVehicleRegistration);
+                    _pdfInvoiceService.SaveInvoice(invoice, fullPath);
+                    _invoiceNumberService.MarkInvoiceNumberUsed(invoice.InvoiceNumber);
+                    _generatedInvoiceRepository.Save(BuildGeneratedInvoiceRecord(invoice, fullPath, cargoSpreadsheetPath));
+                    _draftService.Clear();
+                }));
 
-                if (saveDialog.ShowDialog() != DialogResult.OK)
-                    return;
-
-                _pdfInvoiceService.SaveInvoice(invoice, saveDialog.FileName);
-                _invoiceNumberService.MarkInvoiceNumberUsed(invoice.InvoiceNumber);
-                _generatedInvoiceRepository.Save(BuildGeneratedInvoiceRecord(invoice, saveDialog.FileName));
-                _draftService.Clear();
-
-                MessageBox.Show("Invoice PDF generated successfully.", "Invoice Builder", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Invoice PDF and cargo spreadsheet generated successfully.", "Invoice Builder", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 dataGrid.Rows.Clear();
-                txtVessel.Clear();
                 StartNewInvoice();
             }
             catch (Exception ex)
@@ -599,7 +877,7 @@ namespace InvoiceBuilder
             settingsForm.ShowDialog(this);
         }
 
-        private GeneratedInvoiceRecord BuildGeneratedInvoiceRecord(Invoice invoice, string pdfPath)
+        private GeneratedInvoiceRecord BuildGeneratedInvoiceRecord(Invoice invoice, string pdfPath, string cargoSpreadsheetPath)
         {
             var settings = _settingsService.Load();
 
@@ -609,45 +887,20 @@ namespace InvoiceBuilder
                 Date = invoice.Date,
                 Customer = invoice.Customer,
                 Vessel = invoice.Vessel,
+                CargoType = invoice.CargoType,
                 VehicleRegistration = settings.DefaultVehicleRegistration,
-                Description = BuildStatementDescription(invoice),
+                Description = string.Empty,
                 LoadCount = invoice.Loads.Count,
-                StatementDescription = BuildStatementDescriptionDetail(invoice),
+                StatementDescription = string.Empty,
                 Subtotal = invoice.Subtotal,
                 Vat = invoice.Vat,
                 Total = invoice.Total,
                 PdfPath = pdfPath,
+                CargoSpreadsheetPath = cargoSpreadsheetPath,
                 GeneratedAt = DateTime.Now
             };
         }
 
-        private static string BuildStatementDescription(Invoice invoice)
-        {
-            var loadCount = invoice.Loads.Count;
-            var detail = BuildStatementDescriptionDetail(invoice);
-
-            if (loadCount == 0)
-            {
-                return detail;
-            }
-
-            if (string.IsNullOrWhiteSpace(detail))
-            {
-                return loadCount == 1 ? "1 X LOAD" : $"{loadCount} X LOADS";
-            }
-
-            return loadCount == 1 ? $"1 X LOAD {detail}" : $"{loadCount} X LOADS {detail}";
-        }
-
-        private static string BuildStatementDescriptionDetail(Invoice invoice)
-        {
-            var firstDescription = invoice.Loads
-                .Select(load => load.Description)
-                .FirstOrDefault(description => !string.IsNullOrWhiteSpace(description))
-                ?.Trim();
-
-            return firstDescription ?? string.Empty;
-        }
         private string BuildInvoicePath(Invoice invoice)
         {
             var year = invoice.Date.Year;
@@ -670,7 +923,7 @@ namespace InvoiceBuilder
             // Clean vessel name (important for file safety)
             var vessel = SanitizeFileName(invoice.Vessel);
 
-            var fileName = $"Invoice {monthName} {year} {vessel}.pdf";
+            var fileName = $"Invoice {invoice.InvoiceNumber} - {monthName} {year} {vessel}.pdf";
 
             return Path.Combine(baseFolder, fileName);
         }
@@ -684,9 +937,12 @@ namespace InvoiceBuilder
         private static bool IsEmptyRow(DataGridViewRow row)
         {
             return string.IsNullOrWhiteSpace(row.Cells["clmDescription"].Value?.ToString())
+                && string.IsNullOrWhiteSpace(row.Cells["clmCargoReference"].Value?.ToString())
                 && string.IsNullOrWhiteSpace(row.Cells["clmInvoiceNum"].Value?.ToString())
                 && row.Cells["clmWeight"].Value is null
-                && row.Cells["clmPrice"].Value is null;
+                && row.Cells["clmPrice"].Value is null
+                && string.IsNullOrWhiteSpace(row.Cells["clmSerialBag"].Value?.ToString())
+                && string.IsNullOrWhiteSpace(row.Cells["clmFullEmpty"].Value?.ToString());
         }
 
         private static void ValidateSourceInvoiceNumbers(Invoice invoice)
@@ -697,12 +953,30 @@ namespace InvoiceBuilder
             {
                 if (string.IsNullOrWhiteSpace(load.SourceInvoiceNumber))
                 {
-                    throw new InvalidOperationException("Each row must have its own invoice number in the INVOICE No. column.");
+                    throw new InvalidOperationException("Each load row needs its own GRV NR.");
                 }
 
                 if (!seenNumbers.Add(load.SourceInvoiceNumber))
                 {
-                    throw new InvalidOperationException($"Invoice number {load.SourceInvoiceNumber} is duplicated in this document.");
+                    throw new InvalidOperationException($"GRV NR {load.SourceInvoiceNumber} is duplicated in this invoice.");
+                }
+
+                if (string.IsNullOrWhiteSpace(load.CargoReference)
+                    && invoice.CargoType != CargoTypes.Spodumene)
+                {
+                    var fieldName = invoice.CargoType switch
+                    {
+                        CargoTypes.Containers => "container number",
+                        CargoTypes.BreakBulk => "product",
+                        _ => "weighbridge ticket number"
+                    };
+                    throw new InvalidOperationException($"Each load row needs a {fieldName}.");
+                }
+
+                if (invoice.CargoType == CargoTypes.Containers
+                    && load.FullEmpty is not ("Full" or "Empty"))
+                {
+                    throw new InvalidOperationException($"Select Full or Empty for GRV NR {load.SourceInvoiceNumber}.");
                 }
             }
         }
@@ -724,7 +998,8 @@ namespace InvoiceBuilder
 
         private string GetDefaultCalcType()
         {
-            return cboCalcType.SelectedItem?.ToString() ?? "Weight";
+            return cboCalcType.SelectedItem?.ToString()
+                ?? (_cboCargoType.SelectedItem?.ToString() == CargoTypes.Containers ? "Flat" : "Weight");
         }
 
         private string ReadRowCalcType(DataGridViewRow row)

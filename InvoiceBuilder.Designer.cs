@@ -214,7 +214,7 @@ namespace InvoiceBuilder
             // clmInvoiceNum
             // 
             clmInvoiceNum.FillWeight = 120F;
-            clmInvoiceNum.HeaderText = "INVOICE No.";
+            clmInvoiceNum.HeaderText = "GRV NR";
             clmInvoiceNum.Name = "clmInvoiceNum";
             // 
             // clmDescription
@@ -237,7 +237,7 @@ namespace InvoiceBuilder
             // clmPrice
             // 
             clmPrice.FillWeight = 150F;
-            clmPrice.HeaderText = "UNIT PRICE";
+            clmPrice.HeaderText = "RATE";
             clmPrice.Name = "clmPrice";
             // 
             // clmAmount
