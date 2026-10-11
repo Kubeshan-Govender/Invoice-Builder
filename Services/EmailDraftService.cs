@@ -1,16 +1,24 @@
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Gmail.v1;
+using Google.Apis.Gmail.v1.Data;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
 using InvoiceBuilder.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace InvoiceBuilder.Services
 {
     public class EmailDraftService
     {
+        private const string ApplicationName = "Invoice Builder";
+        private const string CredentialsFileName = "credentials.json";
         private readonly InvoiceLayoutProfile _layout;
 
         public EmailDraftService()
@@ -23,8 +31,18 @@ namespace InvoiceBuilder.Services
             _layout = layout;
         }
 
-        public string CreateStatementEmailDraft(Statement statement, string statementPath, IEnumerable<string> invoicePaths)
+        public async Task<string> CreateStatementEmailDraftAsync(
+            Statement statement,
+            string statementPath,
+            IEnumerable<string> invoicePaths,
+            CancellationToken cancellationToken = default)
         {
+            var recipient = _layout.EmailDefaultRecipient?.Trim();
+            if (string.IsNullOrWhiteSpace(recipient))
+            {
+                throw new InvalidOperationException("Set a Default Email Recipient in Admin Settings before creating a Gmail draft.");
+            }
+
             var attachmentPaths = invoicePaths
                 .Append(statementPath)
                 .Where(path => !string.IsNullOrWhiteSpace(path))
@@ -32,20 +50,62 @@ namespace InvoiceBuilder.Services
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
+            if (!attachmentPaths.Contains(statementPath, StringComparer.OrdinalIgnoreCase))
+            {
+                throw new FileNotFoundException("The generated statement PDF could not be found.", statementPath);
+            }
+
+            var credentialsPath = Path.Combine(AppContext.BaseDirectory, CredentialsFileName);
+            if (!File.Exists(credentialsPath))
+            {
+                throw new FileNotFoundException(
+                    $"Gmail sign-in is not configured. Download a Desktop app OAuth client JSON from Google Cloud and save it as '{CredentialsFileName}' beside Invoice Builder.",
+                    credentialsPath);
+            }
+
+            UserCredential credential;
+            await using (var stream = new FileStream(credentialsPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                var secrets = GoogleClientSecrets.FromStream(stream).Secrets;
+                var tokenPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "InvoiceBuilder",
+                    "GoogleOAuth");
+
+                credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    secrets,
+                    new[] { GmailService.Scope.GmailCompose },
+                    "user",
+                    cancellationToken,
+                    new FileDataStore(tokenPath, true));
+            }
+
+            var gmail = new GmailService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName
+            });
+
             var subject = $"Invoices and Statement for vsl {statement.Vessel}";
-            var body = BuildBody();
+            var rawMessage = BuildMimeMessage(recipient, subject, BuildBody(), attachmentPaths);
+            var draft = await gmail.Users.Drafts.Create(new Draft
+            {
+                Message = new Message { Raw = Base64UrlEncode(rawMessage) }
+            }, "me").ExecuteAsync(cancellationToken);
 
             try
             {
-                CreateOutlookDraft(subject, body, attachmentPaths);
-                return "Email draft opened in Outlook.";
+                Process.Start(new ProcessStartInfo("https://mail.google.com/mail/u/0/#drafts")
+                {
+                    UseShellExecute = true
+                });
             }
             catch
             {
-                var emlPath = CreateEmlDraft(subject, body, attachmentPaths, statementPath);
-                Process.Start(new ProcessStartInfo(emlPath) { UseShellExecute = true });
-                return $"Outlook was not available, so an email draft file was created:\n{emlPath}";
+                // The draft is already saved; it remains available from Gmail's Drafts folder.
             }
+
+            return $"Gmail draft created with {attachmentPaths.Count} attachment(s). Gmail Drafts was opened so you can review and send it. Draft ID: {draft.Id}";
         }
 
         private string BuildBody()
@@ -53,89 +113,91 @@ namespace InvoiceBuilder.Services
             return string.Join(Environment.NewLine,
                 "Good Day",
                 string.Empty,
-                "Please see attached copies as per above",
+                "Please see attached invoice PDFs, cargo spreadsheets, and statement as per above.",
                 string.Empty,
                 "kind regards",
                 _layout.EmailSenderName,
                 _layout.EmailSenderCompanyName);
         }
 
-        private void CreateOutlookDraft(string subject, string body, IReadOnlyList<string> attachmentPaths)
+        private static byte[] BuildMimeMessage(
+            string recipient,
+            string subject,
+            string body,
+            IReadOnlyList<string> attachmentPaths)
         {
-            var outlookType = Type.GetTypeFromProgID("Outlook.Application")
-                ?? throw new InvalidOperationException("Outlook is not installed.");
-
-            var outlook = Activator.CreateInstance(outlookType)
-                ?? throw new InvalidOperationException("Could not start Outlook.");
-
-            var mail = outlookType.InvokeMember(
-                "CreateItem",
-                BindingFlags.InvokeMethod,
-                null,
-                outlook,
-                new object[] { 0 }) ?? throw new InvalidOperationException("Could not create Outlook mail item.");
-
-            var mailType = mail.GetType();
-            mailType.InvokeMember("To", BindingFlags.SetProperty, null, mail, new object[] { _layout.EmailDefaultRecipient });
-            mailType.InvokeMember("Subject", BindingFlags.SetProperty, null, mail, new object[] { subject });
-            mailType.InvokeMember("Body", BindingFlags.SetProperty, null, mail, new object[] { body });
-
-            var attachments = mailType.InvokeMember("Attachments", BindingFlags.GetProperty, null, mail, null)
-                ?? throw new InvalidOperationException("Could not access Outlook attachments.");
-            var attachmentsType = attachments.GetType();
-
-            foreach (var path in attachmentPaths)
-            {
-                attachmentsType.InvokeMember("Add", BindingFlags.InvokeMethod, null, attachments, new object[] { path });
-            }
-
-            mailType.InvokeMember("Display", BindingFlags.InvokeMethod, null, mail, new object[] { false });
-        }
-
-        private string CreateEmlDraft(string subject, string body, IReadOnlyList<string> attachmentPaths, string statementPath)
-        {
-            var draftFolder = Path.GetDirectoryName(statementPath)
-                ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            Directory.CreateDirectory(draftFolder);
-
-            var emlPath = Path.Combine(draftFolder, $"{SanitizeFileName(subject)}.eml");
             var boundary = $"----=_InvoiceBuilder_{Guid.NewGuid():N}";
             var message = new StringBuilder();
-
-            message.AppendLine($"To: {_layout.EmailDefaultRecipient}");
-            message.AppendLine($"Subject: {subject}");
+            message.AppendLine($"To: {SanitizeHeader(recipient)}");
+            message.AppendLine($"Subject: {EncodeHeader(subject)}");
             message.AppendLine("MIME-Version: 1.0");
             message.AppendLine($"Content-Type: multipart/mixed; boundary=\"{boundary}\"");
             message.AppendLine();
             message.AppendLine($"--{boundary}");
             message.AppendLine("Content-Type: text/plain; charset=utf-8");
-            message.AppendLine("Content-Transfer-Encoding: 8bit");
+            message.AppendLine("Content-Transfer-Encoding: base64");
             message.AppendLine();
-            message.AppendLine(body);
+            AppendBase64Lines(message, Encoding.UTF8.GetBytes(body));
 
             foreach (var path in attachmentPaths)
             {
+                var fileName = SanitizeFileName(Path.GetFileName(path));
                 message.AppendLine($"--{boundary}");
-                message.AppendLine($"Content-Type: application/pdf; name=\"{Path.GetFileName(path)}\"");
+                message.AppendLine($"Content-Type: {GetContentType(path)}; name=\"{fileName}\"");
                 message.AppendLine("Content-Transfer-Encoding: base64");
-                message.AppendLine($"Content-Disposition: attachment; filename=\"{Path.GetFileName(path)}\"");
+                message.AppendLine($"Content-Disposition: attachment; filename=\"{fileName}\"");
                 message.AppendLine();
-                message.AppendLine(Convert.ToBase64String(File.ReadAllBytes(path), Base64FormattingOptions.InsertLineBreaks));
+                AppendBase64Lines(message, File.ReadAllBytes(path));
             }
 
             message.AppendLine($"--{boundary}--");
-            File.WriteAllText(emlPath, message.ToString(), Encoding.UTF8);
-            return emlPath;
+            return Encoding.UTF8.GetBytes(message.ToString());
         }
 
-        private static string SanitizeFileName(string input)
+        private static void AppendBase64Lines(StringBuilder builder, byte[] bytes)
         {
-            foreach (char c in Path.GetInvalidFileNameChars())
+            var base64 = Convert.ToBase64String(bytes);
+            for (var offset = 0; offset < base64.Length; offset += 76)
             {
-                input = input.Replace(c.ToString(), string.Empty);
+                builder.AppendLine(base64.Substring(offset, Math.Min(76, base64.Length - offset)));
             }
+        }
 
-            return input.Trim();
+        private static string Base64UrlEncode(byte[] bytes)
+        {
+            return Convert.ToBase64String(bytes)
+                .Replace('+', '-')
+                .Replace('/', '_')
+                .TrimEnd('=');
+        }
+
+        private static string EncodeHeader(string value)
+        {
+            var safeValue = SanitizeHeader(value);
+            return safeValue.All(character => character <= 127)
+                ? safeValue
+                : $"=?utf-8?B?{Convert.ToBase64String(Encoding.UTF8.GetBytes(safeValue))}?=";
+        }
+
+        private static string SanitizeHeader(string value)
+        {
+            return value.Replace("\r", " ").Replace("\n", " ").Trim();
+        }
+
+        private static string SanitizeFileName(string value)
+        {
+            return value.Replace("\\", "_").Replace("/", "_").Replace("\"", "'")
+                .Replace("\r", "_").Replace("\n", "_");
+        }
+
+        private static string GetContentType(string path)
+        {
+            return Path.GetExtension(path).ToLowerInvariant() switch
+            {
+                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                ".pdf" => "application/pdf",
+                _ => "application/octet-stream"
+            };
         }
     }
 }

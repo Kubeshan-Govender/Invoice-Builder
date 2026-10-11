@@ -4,6 +4,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace InvoiceBuilder.Services
 {
@@ -131,6 +132,12 @@ namespace InvoiceBuilder.Services
                         }
 
                         col.Item().PaddingTop(10).Text($"{_layout.VesselLabel}: {invoice.Vessel}").Bold();
+                        var descriptions = invoice.Loads
+                            .Select(load => load.Description?.Trim())
+                            .Where(description => !string.IsNullOrWhiteSpace(description))
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .ToList();
+                        col.Item().PaddingTop(4).Text($"CARGO: {invoice.CargoType}".ToUpper()).Bold();
                     });
                 });
             });
@@ -139,6 +146,47 @@ namespace InvoiceBuilder.Services
         // ---------------- CONTENT ----------------
         private void ComposeContent(IContainer container, Invoice invoice)
         {
+            var loadTableColumns = _layout.LoadTableColumns.ToList();
+            var cargoReferenceIndex = loadTableColumns.FindIndex(column => column.Header == "Cargo Reference");
+            var cargoReference = loadTableColumns[cargoReferenceIndex];
+            loadTableColumns[cargoReferenceIndex] = new InvoiceTableColumn
+            {
+                Header = invoice.CargoType switch
+                {
+                    CargoTypes.Spodumene => "Description",
+                    CargoTypes.Containers => "Container No.",
+                    CargoTypes.BreakBulk => "Product",
+                    _ => "Cargo Reference"
+                },
+                Width = cargoReference.Width,
+                UseRelativeWidth = cargoReference.UseRelativeWidth,
+                Alignment = cargoReference.Alignment,
+                Value = invoice.CargoType == CargoTypes.Spodumene
+                    ? (item, _) => item.Description
+                    : cargoReference.Value
+            };
+
+            if (invoice.CargoType == CargoTypes.Containers)
+            {
+                loadTableColumns.Insert(cargoReferenceIndex + 1, new InvoiceTableColumn
+                {
+                    Header = "Full / Empty",
+                    Width = 45,
+                    Alignment = InvoiceTextAlignment.Center,
+                    Value = (item, _) => item.FullEmpty
+                });
+            }
+            else if (invoice.CargoType == CargoTypes.BreakBulk)
+            {
+                loadTableColumns.Insert(cargoReferenceIndex + 1, new InvoiceTableColumn
+                {
+                    Header = "Serial/Bag NR",
+                    Width = 58,
+                    Alignment = InvoiceTextAlignment.Center,
+                    Value = (item, _) => item.SerialBagNumber
+                });
+            }
+
             container.Column(col =>
             {
                 col.Item().Element(header => ComposeHeader(header, invoice));
@@ -147,7 +195,7 @@ namespace InvoiceBuilder.Services
                 {
                     table.ColumnsDefinition(columns =>
                     {
-                        foreach (var column in _layout.LoadTableColumns)
+                        foreach (var column in loadTableColumns)
                         {
                             if (column.UseRelativeWidth)
                             {
@@ -177,7 +225,7 @@ namespace InvoiceBuilder.Services
                                 .Bold();
                         }
 
-                        foreach (var column in _layout.LoadTableColumns)
+                        foreach (var column in loadTableColumns)
                         {
                             header.Cell().Element(c => HeaderCell(c, column.Header));
                         }
@@ -186,7 +234,7 @@ namespace InvoiceBuilder.Services
                     int index = 1;
                     foreach (var item in invoice.Loads)
                     {
-                        foreach (var column in _layout.LoadTableColumns)
+                        foreach (var column in loadTableColumns)
                         {
                             table.Cell().Element(cell => LoadCell(cell, column, item, index));
                         }

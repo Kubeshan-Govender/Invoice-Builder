@@ -8,6 +8,7 @@ namespace InvoiceBuilder.Models
         public DateTime Date { get; set; }
         public string Customer { get; set; } = string.Empty;
         public string Vessel { get; set; } = string.Empty;
+        public string CargoType { get; set; } = string.Empty;
         public string VehicleRegistration { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int LoadCount { get; set; }
@@ -16,6 +17,7 @@ namespace InvoiceBuilder.Models
         public decimal Vat { get; set; }
         public decimal Total { get; set; }
         public string PdfPath { get; set; } = string.Empty;
+        public string CargoSpreadsheetPath { get; set; } = string.Empty;
         public DateTime GeneratedAt { get; set; }
     }
 }

@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace InvoiceBuilder
@@ -72,7 +73,7 @@ namespace InvoiceBuilder
             _generate.Text = "Generate Statement";
             _generate.Width = 180;
             _generate.Height = 32;
-            _generate.Click += (_, _) => GenerateStatement();
+            _generate.Click += async (_, _) => await GenerateStatementAsync();
 
             _refresh.Text = "Refresh Invoices";
             _refresh.Width = 140;
@@ -177,7 +178,14 @@ namespace InvoiceBuilder
                 }
             };
 
-            _invoiceGrid.CellValueChanged += (_, _) => UpdateTotalsFromSelection();
+            _invoiceGrid.CellValueChanged += (_, e) =>
+            {
+                UpdateTotalsFromSelection();
+                if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+                {
+                    UpdateMissingDescriptionHighlight(_invoiceGrid.Rows[e.RowIndex]);
+                }
+            };
         }
 
         private static void AddLabel(TableLayoutPanel panel, string text, int column, int row)
@@ -262,10 +270,12 @@ namespace InvoiceBuilder
                 .Distinct(StringComparer.OrdinalIgnoreCase));
         }
 
-        private void GenerateStatement()
+        private async Task GenerateStatementAsync()
         {
+            _generate.Enabled = false;
             try
             {
+                _invoiceGrid.EndEdit();
                 var selectedRows = GetSelectedRows();
                 if (selectedRows.Count == 0)
                 {
@@ -273,16 +283,74 @@ namespace InvoiceBuilder
                     return;
                 }
 
+                var missingDescriptions = selectedRows
+                    .Where(row => string.IsNullOrWhiteSpace(row.Description))
+                    .ToList();
+                if (missingDescriptions.Count > 0)
+                {
+                    foreach (DataGridViewRow row in _invoiceGrid.Rows)
+                    {
+                        if (!row.IsNewRow)
+                        {
+                            UpdateMissingDescriptionHighlight(row);
+                        }
+                    }
+
+                    var missingInvoiceNumbers = string.Join(", ", missingDescriptions.Select(row => row.Invoice.InvoiceNumber));
+                    MessageBox.Show(
+                        $"Enter a statement description for each selected invoice. Missing for invoice(s): {missingInvoiceNumbers}.",
+                        "Statement descriptions required",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    var firstMissingRow = _invoiceGrid.Rows
+                        .Cast<DataGridViewRow>()
+                        .First(row => row.Tag is GeneratedInvoiceRecord invoice && missingDescriptions.Any(missing => missing.Invoice.InvoiceNumber == invoice.InvoiceNumber));
+                    _invoiceGrid.CurrentCell = firstMissingRow.Cells["clmDescription"];
+                    _invoiceGrid.BeginEdit(true);
+                    return;
+                }
+
                 var statement = BuildStatement(selectedRows);
                 var filePath = BuildStatementPath(statement);
 
-                _pdfStatementService.SaveStatement(statement, filePath);
-                _statementNumberService.MarkStatementNumberUsed(statement.StatementNumber);
+                var emailResult = string.Empty;
+                Exception emailFailure = null;
+                LoadingDialog.Run(this, "Generating the statement and preparing your Gmail draft…", async () =>
+                {
+                    await Task.Run(() =>
+                    {
+                        _pdfStatementService.SaveStatement(statement, filePath);
+                        _statementNumberService.MarkStatementNumberUsed(statement.StatementNumber);
+                    });
 
-                var emailResult = _emailDraftService.CreateStatementEmailDraft(
-                    statement,
-                    filePath,
-                    selectedRows.Select(row => row.Invoice.PdfPath));
+                    try
+                    {
+                        emailResult = await _emailDraftService.CreateStatementEmailDraftAsync(
+                            statement,
+                            filePath,
+                            selectedRows.SelectMany(row => new[]
+                            {
+                                row.Invoice.PdfPath,
+                                row.Invoice.CargoSpreadsheetPath
+                            }));
+                    }
+                    catch (Exception exception)
+                    {
+                        emailFailure = exception;
+                    }
+                });
+
+                if (emailFailure is not null)
+                {
+                    MessageBox.Show(
+                        $"Statement generated successfully, but the Gmail draft could not be created.\n\n{filePath}\n\n{emailFailure.Message}",
+                        "Gmail Draft",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    LoadInvoices();
+                    return;
+                }
 
                 MessageBox.Show($"Statement generated successfully.\n\n{filePath}\n\n{emailResult}", "Statement Builder", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LoadInvoices();
@@ -290,6 +358,10 @@ namespace InvoiceBuilder
             catch (Exception ex)
             {
                 MessageBox.Show($"Could not generate the statement. {ex.Message}", "Statement Builder", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                _generate.Enabled = true;
             }
         }
 
@@ -315,17 +387,18 @@ namespace InvoiceBuilder
 
         private static string BuildLineDescription(GeneratedInvoiceRecord invoice, string userDescription)
         {
-            if (invoice.LoadCount <= 0)
-            {
-                return string.IsNullOrWhiteSpace(userDescription) ? invoice.Description : userDescription;
-            }
+            return userDescription.Trim();
+        }
 
-            var unit = invoice.LoadCount == 1
-                ? InvoiceLayoutProfiles.Active.StatementTripUnitSingular
-                : InvoiceLayoutProfiles.Active.StatementTripUnitPlural;
+        private void UpdateMissingDescriptionHighlight(DataGridViewRow row)
+        {
+            if (row.IsNewRow) return;
 
-            var prefix = $"{invoice.LoadCount} X {unit}";
-            return string.IsNullOrWhiteSpace(userDescription) ? prefix : $"{prefix} {userDescription}";
+            var isSelected = row.Cells["clmInclude"].Value is true;
+            var isMissing = string.IsNullOrWhiteSpace(row.Cells["clmDescription"].Value?.ToString());
+            row.Cells["clmDescription"].Style.BackColor = isSelected && isMissing
+                ? Color.MistyRose
+                : _invoiceGrid.DefaultCellStyle.BackColor;
         }
 
         private static string BuildStatementPath(Statement statement)

@@ -11,6 +11,9 @@ namespace InvoiceBuilder.Models
         public DateTime Date { get; set; }
         public string SourceInvoiceNumber { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string CargoReference { get; set; } = string.Empty;
+        public string SerialBagNumber { get; set; } = string.Empty;
+        public string FullEmpty { get; set; } = string.Empty;
         public decimal Weight { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }

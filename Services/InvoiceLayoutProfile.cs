@@ -132,17 +132,17 @@ namespace InvoiceBuilder.Services
                     },
                     new()
                     {
-                        Header = "Invoice #",
+                        Header = "GRV NR",
                         Width = 62,
                         Alignment = InvoiceTextAlignment.Center,
                         Value = (item, _) => item.SourceInvoiceNumber
                     },
                     new()
                     {
-                        Header = "Description",
+                        Header = "Cargo Reference",
                         Width = 3,
                         UseRelativeWidth = true,
-                        Value = (item, _) => item.Description
+                        Value = (item, _) => item.CargoReference
                     },
                     new()
                     {
@@ -160,7 +160,7 @@ namespace InvoiceBuilder.Services
                     },
                     new()
                     {
-                        Header = "Unit Price",
+                        Header = "Rate",
                         Width = 68,
                         Alignment = InvoiceTextAlignment.Right,
                         Value = (item, _) => $"R {item.UnitPrice:N2}"

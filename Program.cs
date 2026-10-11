@@ -13,6 +13,15 @@ namespace InvoiceBuilder
         [STAThread]
         static void Main()
         {
+            using var singleInstanceMutex = new Mutex(true, @"Local\InvoiceBuilder.SingleInstance", out var isFirstInstance);
+            if (!isFirstInstance)
+            {
+                MessageBox.Show("Invoice Builder is already running.", "Invoice Builder", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             QuestPDF.Settings.License = LicenseType.Community;
@@ -26,6 +35,11 @@ namespace InvoiceBuilder
             }
 
             Application.Run(new InvoiceBuilder());
+            }
+            finally
+            {
+                singleInstanceMutex.ReleaseMutex();
+            }
         }
     }
 }
